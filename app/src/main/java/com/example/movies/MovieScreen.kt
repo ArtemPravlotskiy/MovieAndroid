@@ -8,14 +8,19 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 
 // Available screens in app
 enum class MovieScreen(@StringRes val title: Int) {
@@ -60,5 +65,32 @@ fun MovieAppBar(
                 navigationIconContentColor = Color.White
             )
         )
+    }
+}
+
+//Screens drawer
+@Composable
+fun MovieApp(
+    // TODO
+    navController: NavHostController = rememberNavController(),
+    modifier: Modifier = Modifier
+) {
+
+    val backStackEntry by navController.currentBackStackEntryAsState()
+    val currentScreen = MovieScreen.valueOf(
+        backStackEntry?.destination?.route ?: MovieScreen.Start.name
+    )
+
+    Scaffold (
+        topBar = {
+            MovieAppBar(
+                currentScreen = currentScreen,
+                canNavigateBack = navController.previousBackStackEntry != null,
+                navigateUp = {}
+            )
+        }
+    ) { innerPadding ->
+
+        // TODO()
     }
 }
