@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Movies</string>
+    <string name="select_genre">Select genre</string>
+    <string name="movie_list">Movies</string>
+    <string name="movie_info">Movies</string>
+    <string name="back">Back</string>
 </resources>
