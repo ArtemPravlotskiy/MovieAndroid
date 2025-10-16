@@ -86,7 +86,7 @@ fun MovieApp(
             MovieAppBar(
                 currentScreen = currentScreen,
                 canNavigateBack = navController.previousBackStackEntry != null,
-                navigateUp = {}
+                navigateUp = { navController.navigateUp() }
             )
         }
     ) { innerPadding ->
