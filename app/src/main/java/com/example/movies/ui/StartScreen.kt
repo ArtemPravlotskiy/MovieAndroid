@@ -64,7 +64,7 @@ fun StartScreen (
             ) {
                 Text(text = "Settings") // TODO stringres
             }
-            Spacer(modifier = Modifier.height(69.dp))
+            Spacer(modifier = Modifier.height(69.dp)) // TODO more dp for spacer
         }
     }
 }
