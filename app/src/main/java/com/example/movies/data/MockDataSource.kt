@@ -1,28 +1,9 @@
 package com.example.movies.data
 
-data class Genre(
-    val id: Int,
-    val name: String
-)
+import com.example.movies.model.Genre
+import com.example.movies.model.Movie
 
 data class GenresResponse(val genres: List<Genre>)
-
-data class Movie(
-    val id: Int,
-    val title: String,
-    val originalTitle: String,
-    val originalLanguage: String,
-    val overview: String,
-    val releaseDate: String,
-    val popularity: Double,
-    val voteAverage: Double,
-    val voteCount: Int,
-    val adult: Boolean,
-    val video: Boolean,
-    val genreIds: List<Int>,
-    val posterPath: String,
-    val backdropPath: String
-)
 
 data class MoviesResponse(
     val page: Int,
@@ -85,24 +66,24 @@ val mockMoviesResponse = MoviesResponse (
 
 val mockGenresResponse = GenresResponse(
     genres = listOf(
-        Genre(28, "Action"),
-        Genre(12, "Adventure"),
-        Genre(16, "Animation"),
-        Genre(35, "Comedy"),
-        Genre(80, "Crime"),
-        Genre(99, "Documentary"),
-        Genre(18, "Drama"),
-        Genre(10751, "Family"),
-        Genre(14, "Fantasy"),
-        Genre(36, "History"),
-        Genre(27, "Horror"),
-        Genre(10402, "Music"),
-        Genre(9648, "Mystery"),
-        Genre(10749, "Romance"),
-        Genre(878, "Science Fiction"),
-        Genre(10770, "TV Movie"),
-        Genre(53, "Thriller"),
-        Genre(10752, "War"),
-        Genre(37, "Western")
+        Genre("28", "Action"),
+        Genre("12", "Adventure"),
+        Genre("16", "Animation"),
+        Genre("35", "Comedy"),
+        Genre("80", "Crime"),
+        Genre("99", "Documentary"),
+        Genre("18", "Drama"),
+        Genre("10751", "Family"),
+        Genre("14", "Fantasy"),
+        Genre("36", "History"),
+        Genre("27", "Horror"),
+        Genre("10402", "Music"),
+        Genre("9648", "Mystery"),
+        Genre("10749", "Romance"),
+        Genre("878", "Science Fiction"),
+        Genre("10770", "TV Movie"),
+        Genre("53", "Thriller"),
+        Genre("10752", "War"),
+        Genre("37", "Western")
     )
 )

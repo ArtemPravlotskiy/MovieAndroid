@@ -1,0 +1,14 @@
+package com.example.movies.data
+
+import com.example.movies.model.Movie
+import com.example.movies.network.MoviesApiService
+
+interface MoviesRepository {
+    suspend fun getMovies(genreId: String, page: Int): List<Movie>
+}
+
+class NetworkMoviesRepository(
+    private val movieApiService: MoviesApiService
+) : MoviesRepository {
+    override suspend fun getMovies(genreId: String, page: Int): List<Movie> = movieApiService.getMovies(ApiKey.API_KEY, genreId, page)
+}
