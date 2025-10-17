@@ -19,8 +19,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.movies.ui.StartScreen
 
 // Available screens in app
 enum class MovieScreen(@StringRes val title: Int) {
@@ -77,9 +80,13 @@ fun MovieApp(
 ) {
 
     val backStackEntry by navController.currentBackStackEntryAsState()
-    val currentScreen = MovieScreen.valueOf(
-        backStackEntry?.destination?.route ?: MovieScreen.Start.name
-    )
+    val currentRoute = backStackEntry?.destination?.route ?: MovieScreen.Start.name
+    val currentScreen = when {
+        currentRoute.startsWith(MovieScreen.Genres.name) -> MovieScreen.Genres
+        currentRoute.startsWith(MovieScreen.Movies.name) -> MovieScreen.Movies
+        currentRoute.startsWith(MovieScreen.MovieInfo.name) -> MovieScreen.MovieInfo
+        else -> MovieScreen.Start
+    }
 
     Scaffold (
         topBar = {
@@ -91,6 +98,16 @@ fun MovieApp(
         }
     ) { innerPadding ->
 
+        NavHost(
+            navController = navController,
+            startDestination = MovieScreen.Start.name,
+            modifier = Modifier.padding(innerPadding)
+        ) {
+            composable(route = MovieScreen.Start.name) {
+                StartScreen()
+            }
+            // TODO composable's
+        }
         // TODO()
     }
 }
