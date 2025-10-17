@@ -6,7 +6,6 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 
 interface MoviesApiService {
-    // BASE_URL = "https://api.themoviedb.org/3/" TODO: delete
 
     @GET("genre/movie/list?api_key={api_key}&language=en")
     suspend fun getGenres(
