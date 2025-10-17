@@ -25,9 +25,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.movies.R
-import com.example.movies.data.Genre
 import com.example.movies.data.GenresResponse
 import com.example.movies.data.mockGenresResponse
+import com.example.movies.model.Genre
 import com.example.movies.ui.theme.MoviesTheme
 
 
@@ -37,7 +37,7 @@ fun GenreScreen (
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier.fillMaxSize()) {
-        Image( //TODO incorrect image draw
+        Image( //TODO incorrect background image draw
             painter = painterResource(R.drawable.genres),
             contentDescription = null,
             modifier = modifier.fillMaxSize()
@@ -100,5 +100,5 @@ fun GenreScreenPreview() {
 @Preview
 @Composable
 fun GenreBoxPreview() {
-    GenreBox(Genre(28, "Action"))
+    GenreBox(Genre("28", "Action"))
 }
