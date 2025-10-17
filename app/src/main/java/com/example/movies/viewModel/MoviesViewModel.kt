@@ -9,7 +9,7 @@ import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.AP
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import coil.network.HttpException
+import retrofit2.HttpException
 import com.example.movies.MoviesApplication
 import com.example.movies.data.MoviesRepository
 import com.example.movies.model.Movie
