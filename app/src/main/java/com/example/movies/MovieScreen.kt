@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,6 +27,10 @@ import com.example.movies.ui.GenreScreen
 import com.example.movies.ui.StartScreen
 import com.example.movies.viewModel.GenresViewModel
 import androidx.compose.runtime.collectAsState
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
+import com.example.movies.ui.MoviesScreen
+import com.example.movies.viewModel.MoviesViewModel
 
 // Available screens in app
 enum class MovieScreen(@StringRes val title: Int) {
@@ -81,9 +86,9 @@ fun MovieApp(
 ) {
 
     val backStackEntry by navController.currentBackStackEntryAsState()
-    val currentScreen = MovieScreen.valueOf(
-            backStackEntry?.destination?.route ?: MovieScreen.Start.name
-    )
+    val route = backStackEntry?.destination?.route ?: MovieScreen.Start.name
+    val baseRoute = route.substringBefore("/") // "Movies/28" → "Movies"
+    val currentScreen = MovieScreen.valueOf(baseRoute)
 
     Scaffold (
         topBar = {
@@ -100,6 +105,7 @@ fun MovieApp(
             startDestination = MovieScreen.Start.name,
             modifier = Modifier.padding(innerPadding)
         ) {
+            // Start screen
             composable(route = MovieScreen.Start.name) {
                 StartScreen(
                     onStartButtonClicked = {
@@ -108,14 +114,39 @@ fun MovieApp(
                 )
             }
 
+            // Screen with list of genres
             composable (route = MovieScreen.Genres.name) {
                 val genresViewModel: GenresViewModel = viewModel(factory = GenresViewModel.Factory)
                 val uiState by genresViewModel.genresUiState.collectAsState()
                 GenreScreen(
                     genresUiState = uiState,
-                    retryAction = genresViewModel::getGenres
+                    retryAction = genresViewModel::getGenres,
+                    showMovieList = { selectedGenre ->
+                        navController.navigate("${MovieScreen.Movies.name}/${selectedGenre}")
+                    }
                 ) // TODO delete mock data
             }
+
+            // Screen with list of movies on genre
+            composable (
+                route = "${MovieScreen.Movies.name}/{genreId}",
+                arguments = listOf(navArgument("genreId") { type = NavType.StringType })
+                ) {
+                val genreId = backStackEntry?.arguments?.getString("genreId") ?: ""
+                val moviesViewModel: MoviesViewModel = viewModel(factory = MoviesViewModel.Factory)
+                val uiState by moviesViewModel.moviesUiState.collectAsState()
+
+                LaunchedEffect(genreId) {
+                    moviesViewModel.loadMovies(genreId)
+                }
+
+                MoviesScreen(
+                    moviesUiState = uiState,
+                    retryAction = { moviesViewModel.loadMovies(genreId) },
+                    onLoadMore = { moviesViewModel.loadMovies(genreId) }
+                )
+            }
+
             // TODO composable's
         }
         // TODO()

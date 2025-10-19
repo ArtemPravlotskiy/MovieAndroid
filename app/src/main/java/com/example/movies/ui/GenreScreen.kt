@@ -36,7 +36,7 @@ import com.example.movies.viewModel.GenresUiState
 fun GenreScreen (
     genresUiState: GenresUiState,
     retryAction: () -> Unit,
-    showMovieList: () -> Unit,
+    showMovieList: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     when (genresUiState) {
@@ -52,7 +52,7 @@ fun GenreScreen (
 @Composable
 fun GenresGridScreen(
     genres: List<Genre>,
-    showMovieList: () -> Unit,
+    showMovieList: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
@@ -75,7 +75,7 @@ fun GenresGridScreen(
 @Composable
 fun GenreBox(
     genre: Genre,
-    showMovieList: () -> Unit
+    showMovieList: (Int) -> Unit
 ) {
     val resourceName = genre.name
         .lowercase()
@@ -88,7 +88,7 @@ fun GenreBox(
     }
 
     Button(
-        onClick = showMovieList,
+        onClick = { showMovieList(genre.id) },
         colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
         shape = RoundedCornerShape(15.dp),
         modifier = Modifier.fillMaxSize().aspectRatio(1f).padding(start = 15.dp, end = 15.dp, bottom = 2.dp) //TODO less padding top and bottom

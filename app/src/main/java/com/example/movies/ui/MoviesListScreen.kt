@@ -39,7 +39,6 @@ import com.example.movies.R
 fun MoviesScreen(
     moviesUiState: MoviesUiState,
     retryAction: () -> Unit,
-    genre: Genre,
     onLoadMore: () -> Unit,
     modifier: Modifier = Modifier
 ) {
