@@ -1,8 +1,8 @@
 package com.example.movies.network
 
-import com.example.movies.model.Genre
 import com.example.movies.model.GenresResponse
 import com.example.movies.model.Movie
+import com.example.movies.model.MoviesResponse
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -21,7 +21,7 @@ interface MoviesApiService {
         @Query("with_genres") genreId: String,
         @Query("page") page: Int,
         @Query("language") language: String = "en"
-    ): List<Movie>
+    ): MoviesResponse
 
     @GET("movie/{movie_id}")
     suspend fun getMovieInfo(
