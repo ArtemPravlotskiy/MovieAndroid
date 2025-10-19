@@ -16,14 +16,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.movies.data.mockGenresResponse
 import com.example.movies.ui.GenreScreen
 import com.example.movies.ui.StartScreen
+import com.example.movies.viewModel.GenresViewModel
+import androidx.compose.runtime.collectAsState
 
 // Available screens in app
 enum class MovieScreen(@StringRes val title: Int) {
@@ -107,7 +109,12 @@ fun MovieApp(
             }
 
             composable (route = MovieScreen.Genres.name) {
-                GenreScreen(genres = mockGenresResponse) // TODO delete mock data
+                val genresViewModel: GenresViewModel = viewModel(factory = GenresViewModel.Factory)
+                val uiState by genresViewModel.genresUiState.collectAsState()
+                GenreScreen(
+                    genresUiState = uiState,
+                    retryAction = genresViewModel::getGenres
+                ) // TODO delete mock data
             }
             // TODO composable's
         }

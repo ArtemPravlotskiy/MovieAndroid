@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -21,32 +22,47 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.movies.R
-import com.example.movies.data.GenresResponse
-import com.example.movies.data.mockGenresResponse
 import com.example.movies.model.Genre
 import com.example.movies.ui.theme.MoviesTheme
+import com.example.movies.viewModel.GenresUiState
 
 
 @Composable
 fun GenreScreen (
-    genres: GenresResponse,
+    genresUiState: GenresUiState,
+    retryAction: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Box(modifier = modifier.fillMaxSize()) {
+    when (genresUiState) {
+        is GenresUiState.Loading -> LoadingScreen(modifier = modifier.fillMaxSize())
+        is GenresUiState.Success -> GenresGridScreen(
+            genresUiState.genres
+        )
+        is GenresUiState.Error -> ErrorScreen(retryAction, modifier = modifier.fillMaxSize())
+    }
+}
+
+@Composable
+fun GenresGridScreen(
+    genres: List<Genre>,
+    modifier: Modifier = Modifier
+) {
+    Box(modifier = Modifier.fillMaxSize()) {
         Image( //TODO incorrect background image draw
             painter = painterResource(R.drawable.genres),
             contentDescription = null,
-            modifier = modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize()
         )
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
-            modifier = modifier.padding(13.dp)
+            modifier = Modifier.padding(13.dp)
         ) {
-            items(genres.genres) { genre ->
+            items(genres) { genre ->
                 GenreBox(genre)
             }
         }
@@ -68,8 +84,8 @@ fun GenreBox(genre: Genre) {
     Button(
         onClick = {},
         colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
-        shape = RoundedCornerShape(0.dp), //TODO more shape for button
-        modifier = Modifier.fillMaxSize().aspectRatio(1f).padding(15.dp) //TODO less padding top and bottom
+        shape = RoundedCornerShape(15.dp),
+        modifier = Modifier.fillMaxSize().aspectRatio(1f).padding(start = 15.dp, end = 15.dp, bottom = 2.dp) //TODO less padding top and bottom
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -89,16 +105,51 @@ fun GenreBox(genre: Genre) {
     }
 }
 
+@Composable
+fun LoadingScreen(
+    modifier: Modifier = Modifier
+) {
+    Image(
+        painter = painterResource(R.drawable.loading_img),
+        contentDescription = stringResource(R.string.loading),
+        modifier = modifier.size(200.dp)
+    )
+}
+
+@Composable
+fun ErrorScreen(
+    retryAction: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column (
+        modifier = modifier,
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(
+            painter = painterResource(R.drawable.ic_connection_error),
+            contentDescription = ""
+        )
+        Text(
+            text = stringResource(R.string.failed_load),
+            modifier = Modifier.padding(16.dp)
+        )
+        Button(onClick = retryAction) {
+            Text(stringResource(R.string.retry))
+        }
+    }
+}
+
 @Preview(showSystemUi = true)
 @Composable
 fun GenreScreenPreview() {
     MoviesTheme {
-        GenreScreen(genres = mockGenresResponse)
+        //GenreScreen(genres = mockGenresResponse)
     }
 }
 
 @Preview
 @Composable
 fun GenreBoxPreview() {
-    GenreBox(Genre("28", "Action"))
+    GenreBox(Genre(28, "Action"))
 }

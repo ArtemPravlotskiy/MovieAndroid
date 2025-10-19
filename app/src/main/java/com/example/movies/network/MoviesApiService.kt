@@ -1,27 +1,32 @@
 package com.example.movies.network
 
 import com.example.movies.model.Genre
+import com.example.movies.model.GenresResponse
 import com.example.movies.model.Movie
 import retrofit2.http.GET
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface MoviesApiService {
 
-    @GET("genre/movie/list?api_key={api_key}&language=en")
+    @GET("genre/movie/list")
     suspend fun getGenres(
-        @Path("api_key") key: String
-    ): List<Genre>
+        @Query("api_key") key: String,
+        @Query("language") language: String = "en"
+    ): GenresResponse
 
-    @GET("discover/movie?api_key={api_key}&with_genres={genre_id}&page={page}&language=en")
+    @GET("discover/movie")
     suspend fun getMovies(
-        @Path("api_key") key: String,
-        @Path("genre_id") genreId: String,
-        @Path("page") page: Int
+        @Query("api_key") key: String,
+        @Query("with_genres") genreId: String,
+        @Query("page") page: Int,
+        @Query("language") language: String = "en"
     ): List<Movie>
 
-    @GET("movie/{movie_id}?api_key={api_key}&language=en")
-    suspend fun getMoviesInfo(
-        @Path("api_key") key: String,
-        @Path("movie_id") movieId: String
+    @GET("movie/{movie_id}")
+    suspend fun getMovieInfo(
+        @Path("movie_id") movieId: String,
+        @Query("api_key") key: String,
+        @Query("language") language: String = "en"
     ): Movie
 }
