@@ -36,12 +36,14 @@ import com.example.movies.viewModel.GenresUiState
 fun GenreScreen (
     genresUiState: GenresUiState,
     retryAction: () -> Unit,
+    showMovieList: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     when (genresUiState) {
         is GenresUiState.Loading -> LoadingScreen(modifier = modifier.fillMaxSize())
         is GenresUiState.Success -> GenresGridScreen(
-            genresUiState.genres
+            genres = genresUiState.genres,
+            showMovieList = showMovieList
         )
         is GenresUiState.Error -> ErrorScreen(retryAction, modifier = modifier.fillMaxSize())
     }
@@ -50,6 +52,7 @@ fun GenreScreen (
 @Composable
 fun GenresGridScreen(
     genres: List<Genre>,
+    showMovieList: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
@@ -63,14 +66,17 @@ fun GenresGridScreen(
             modifier = Modifier.padding(13.dp)
         ) {
             items(genres) { genre ->
-                GenreBox(genre)
+                GenreBox(genre, showMovieList = showMovieList)
             }
         }
     }
 }
 
 @Composable
-fun GenreBox(genre: Genre) {
+fun GenreBox(
+    genre: Genre,
+    showMovieList: () -> Unit
+) {
     val resourceName = genre.name
         .lowercase()
         .replace(" ", "")
@@ -82,7 +88,7 @@ fun GenreBox(genre: Genre) {
     }
 
     Button(
-        onClick = {},
+        onClick = showMovieList,
         colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
         shape = RoundedCornerShape(15.dp),
         modifier = Modifier.fillMaxSize().aspectRatio(1f).padding(start = 15.dp, end = 15.dp, bottom = 2.dp) //TODO less padding top and bottom
@@ -116,5 +122,5 @@ fun GenreScreenPreview() {
 @Preview
 @Composable
 fun GenreBoxPreview() {
-    GenreBox(Genre(28, "Action"))
+    GenreBox(Genre(28, "Action"), {})
 }
