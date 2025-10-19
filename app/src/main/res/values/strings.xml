@@ -4,4 +4,6 @@
     <string name="movie_list">Movies</string>
     <string name="movie_info">Movies</string>
     <string name="back">Back</string>
+    <string name="start">S T A R T</string>
+    <string name="settings">SETTINGS</string>
 </resources>

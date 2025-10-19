@@ -18,14 +18,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.movies.ui.theme.MoviesTheme
 import com.example.movies.R
 
 @Composable
 fun StartScreen (
+    onStartButtonClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier.fillMaxSize()) {
@@ -41,7 +45,7 @@ fun StartScreen (
             modifier = modifier.fillMaxSize()
             ) {
             Button(
-                onClick = {}, // TODO click activity
+                onClick = {onStartButtonClicked()},
                 shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Black,
@@ -49,7 +53,10 @@ fun StartScreen (
                 ),
                 modifier = Modifier.height(130.dp).width(270.dp).padding(10.dp)
             ) {
-                Text(text = "Start") // TODO stringres
+                Text(
+                    text = stringResource(R.string.start),
+                    fontSize = 25.sp
+                )
             }
             Button(
                 onClick = {}, // TODO click activity
@@ -60,9 +67,13 @@ fun StartScreen (
                 ),
                 modifier = Modifier.height(130.dp).width(270.dp).padding(10.dp)
             ) {
-                Text(text = "Settings") // TODO stringres
+                Text(
+                    text = stringResource(R.string.settings),
+                    color = colorResource(R.color.dark_yellow),
+                    fontSize = 15.sp
+                )
             }
-            Spacer(modifier = Modifier.height(69.dp)) // TODO more dp for spacer
+            Spacer(modifier = Modifier.height(71.dp))
         }
     }
 }
@@ -71,6 +82,6 @@ fun StartScreen (
 @Composable
 fun StartScreenPreview() {
     MoviesTheme {
-        StartScreen()
+        StartScreen({})
     }
 }

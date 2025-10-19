@@ -4,14 +4,12 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -23,6 +21,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.movies.data.mockGenresResponse
+import com.example.movies.ui.GenreScreen
 import com.example.movies.ui.StartScreen
 
 // Available screens in app
@@ -74,19 +74,14 @@ fun MovieAppBar(
 //Screens drawer
 @Composable
 fun MovieApp(
-    // TODO
     navController: NavHostController = rememberNavController(),
     modifier: Modifier = Modifier
 ) {
 
     val backStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = backStackEntry?.destination?.route ?: MovieScreen.Start.name
-    val currentScreen = when {
-        currentRoute.startsWith(MovieScreen.Genres.name) -> MovieScreen.Genres
-        currentRoute.startsWith(MovieScreen.Movies.name) -> MovieScreen.Movies
-        currentRoute.startsWith(MovieScreen.MovieInfo.name) -> MovieScreen.MovieInfo
-        else -> MovieScreen.Start
-    }
+    val currentScreen = MovieScreen.valueOf(
+            backStackEntry?.destination?.route ?: MovieScreen.Start.name
+    )
 
     Scaffold (
         topBar = {
@@ -104,7 +99,15 @@ fun MovieApp(
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(route = MovieScreen.Start.name) {
-                StartScreen()
+                StartScreen(
+                    onStartButtonClicked = {
+                        navController.navigate(MovieScreen.Genres.name)
+                    }
+                )
+            }
+
+            composable (route = MovieScreen.Genres.name) {
+                GenreScreen(genres = mockGenresResponse) // TODO delete mock data
             }
             // TODO composable's
         }
