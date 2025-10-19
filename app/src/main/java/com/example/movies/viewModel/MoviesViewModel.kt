@@ -13,6 +13,8 @@ import retrofit2.HttpException
 import com.example.movies.MoviesApplication
 import com.example.movies.data.MoviesRepository
 import com.example.movies.model.Movie
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import okio.IOException
 
@@ -25,24 +27,47 @@ sealed interface MoviesUiState {
 class MoviesViewModel(
     private val moviesRepository: MoviesRepository
 ) : ViewModel() {
-    var moviesUiState: MoviesUiState by mutableStateOf(MoviesUiState.Loading)
+    private val _moviesUiState = MutableStateFlow<MoviesUiState>(MoviesUiState.Loading)
+    val moviesUiState: StateFlow<MoviesUiState> = _moviesUiState
 
-    init {
-        getMovies(genreId = "28", page = 1)
-    }
+    private var currentPage = 1
+    private var currentGenreId: String = ""
+    private var isLoadingMore = false
 
-    fun getMovies(genreId: String, page: Int) {
+    fun loadMovies(genreId: String) {
+        if (isLoadingMore) return
+        isLoadingMore = true
+
         viewModelScope.launch {
-            moviesUiState = MoviesUiState.Loading
-            moviesUiState = try {
-                MoviesUiState.Success (moviesRepository.getMovies(genreId, page))
+            val currentState = _moviesUiState.value
+            val pageToLoad = if (currentState is MoviesUiState.Success) currentPage + 1 else 1
+
+            try {
+                val newMovies = moviesRepository.getMovies(genreId, pageToLoad)
+
+                val updatedMovies = if (currentState is MoviesUiState.Success) {
+                    currentState.movies + newMovies
+                } else {
+                    newMovies
+                }
+
+                _moviesUiState.value = MoviesUiState.Success(updatedMovies)
+                currentPage = pageToLoad
+                currentGenreId = genreId
             } catch (_: IOException) {
-                MoviesUiState.Error
+                if (currentState !is MoviesUiState.Success) {
+                    _moviesUiState.value = MoviesUiState.Error
+                }
             } catch (_: HttpException) {
-                MoviesUiState.Error
+                if (currentState !is MoviesUiState.Success) {
+                    _moviesUiState.value = MoviesUiState.Error
+                }
+            } finally {
+                isLoadingMore = false
             }
         }
     }
+
 
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
