@@ -11,6 +11,7 @@ import retrofit2.Retrofit
 interface AppContainer {
     val moviesRepository: MoviesRepository
     val genresRepository: GenresRepository
+    val movieDetailsRepository: MovieDetailsRepository
 }
 
 class DefaultAppContainer : AppContainer {
@@ -42,5 +43,9 @@ class DefaultAppContainer : AppContainer {
 
     override val moviesRepository: MoviesRepository by lazy {
         NetworkMoviesRepository(retrofitService)
+    }
+
+    override val movieDetailsRepository: MovieDetailsRepository by lazy {
+        NetworkMovieDetailsRepository(retrofitService)
     }
 }
