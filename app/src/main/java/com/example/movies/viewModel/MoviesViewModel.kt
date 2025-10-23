@@ -1,15 +1,11 @@
 package com.example.movies.viewModel
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import retrofit2.HttpException
 import com.example.movies.MoviesApplication
 import com.example.movies.data.MoviesRepository
 import com.example.movies.model.Movie
@@ -17,6 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import okio.IOException
+import retrofit2.HttpException
 
 sealed interface MoviesUiState {
     data class Success(val movies: List<Movie>) : MoviesUiState

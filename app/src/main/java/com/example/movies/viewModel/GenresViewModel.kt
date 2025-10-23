@@ -1,16 +1,11 @@
 package com.example.movies.viewModel
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import retrofit2.HttpException
 import com.example.movies.MoviesApplication
 import com.example.movies.data.GenresRepository
 import com.example.movies.model.Genre
@@ -18,6 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import okio.IOException
+import retrofit2.HttpException
 
 sealed interface GenresUiState {
     data class Success(val genres: List<Genre>) : GenresUiState
@@ -39,7 +35,7 @@ class GenresViewModel(
         viewModelScope.launch {
             _genresUiState.value = GenresUiState.Loading
             _genresUiState.value = try {
-                GenresUiState.Success (genresRepository.getGenres())
+                GenresUiState.Success(genresRepository.getGenres())
             } catch (_: IOException) {
                 GenresUiState.Error
             } catch (_: HttpException) {

@@ -21,18 +21,20 @@ sealed interface MovieDetailsUiState {
     object Loading : MovieDetailsUiState
 }
 
-class MovieDetailsViewModel (
+class MovieDetailsViewModel(
     private val movieDetailsRepository: MovieDetailsRepository
 ) : ViewModel() {
-    private val _movieDetailsUiState = MutableStateFlow<MovieDetailsUiState>(MovieDetailsUiState.Loading)
+    private val _movieDetailsUiState =
+        MutableStateFlow<MovieDetailsUiState>(MovieDetailsUiState.Loading)
     val movieDetailsUiState: StateFlow<MovieDetailsUiState> = _movieDetailsUiState
 
     fun getMovieDetails(movieId: String) {
         viewModelScope.launch {
             _movieDetailsUiState.value = MovieDetailsUiState.Loading
             _movieDetailsUiState.value = try {
-                MovieDetailsUiState.Success(movieDetailsRepository
-                    .getMovieDetails(movieId = movieId)
+                MovieDetailsUiState.Success(
+                    movieDetailsRepository
+                        .getMovieDetails(movieId = movieId)
                 )
             } catch (e: IOException) {
                 MovieDetailsUiState.Error

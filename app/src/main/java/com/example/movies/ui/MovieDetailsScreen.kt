@@ -94,6 +94,7 @@ fun FirstBlock(
         Column(
             modifier = Modifier.padding(8.dp)
         ) {
+            // Title
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
@@ -106,12 +107,16 @@ fun FirstBlock(
                     fontSize = 30.sp
                 )
             }
+
+            // Poster + 3 text block
             Box(
                 modifier = Modifier.fillMaxHeight()
             ) {
                 Row(
                     modifier = Modifier.height(270.dp)
                 ) {
+
+                    // Poster
                     Box(
                         modifier = Modifier
                             .fillMaxWidth(0.5f)
@@ -134,12 +139,14 @@ fun FirstBlock(
                         )
                     }
 
+                    // 3 text blocks
                     Column(
                         verticalArrangement = Arrangement.Bottom,
                         modifier = Modifier
                             .padding(bottom = 10.dp)
                             .fillMaxHeight()
                     ) {
+                        // Block 1 - runtime
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(5.dp))
@@ -151,7 +158,10 @@ fun FirstBlock(
                                 modifier = Modifier.padding(5.dp)
                             )
                         }
+
                         Spacer(modifier = Modifier.height(10.dp))
+
+                        // Block 2 - release date
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(5.dp))
@@ -163,6 +173,8 @@ fun FirstBlock(
                                 modifier = Modifier.padding(5.dp)
                             )
                         }
+
+                        // Block 3 - tagline
                         if (movie.tagline.isNotBlank()) {
                             Spacer(modifier = Modifier.height(10.dp))
                             Box(
@@ -185,6 +197,7 @@ fun FirstBlock(
                 verticalAlignment = Alignment.Bottom,
                 modifier = Modifier.padding(10.dp)
             ) {
+                // Average vote
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier
@@ -200,6 +213,7 @@ fun FirstBlock(
                     )
                 }
 
+                // movie's genres
                 Box(
                     contentAlignment = Alignment.BottomStart,
                     modifier = Modifier
@@ -217,6 +231,7 @@ fun FirstBlock(
     }
 }
 
+// Overview
 @Composable
 fun SecondBlock(
     movie: MovieDetails

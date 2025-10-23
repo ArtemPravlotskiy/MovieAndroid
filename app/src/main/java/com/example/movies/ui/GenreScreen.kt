@@ -6,12 +6,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -25,7 +22,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -41,7 +37,7 @@ import com.example.movies.viewModel.GenresUiState
 
 
 @Composable
-fun GenreScreen (
+fun GenreScreen(
     genresUiState: GenresUiState,
     retryAction: () -> Unit,
     showMovieList: (Int) -> Unit,
@@ -53,6 +49,7 @@ fun GenreScreen (
             genres = genresUiState.genres,
             showMovieList = showMovieList
         )
+
         is GenresUiState.Error -> ErrorScreen(retryAction, modifier = modifier.fillMaxSize())
     }
 }
@@ -60,16 +57,16 @@ fun GenreScreen (
 @Composable
 fun GenresGridScreen(
     genres: List<Genre>,
-    showMovieList: (Int) -> Unit,
-    modifier: Modifier = Modifier
+    showMovieList: (Int) -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
-        Image( //TODO incorrect background image draw
+        Image(
             painter = painterResource(R.drawable.genres),
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
         )
+
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
             contentPadding = PaddingValues(
@@ -97,7 +94,8 @@ fun GenreBox(
 
     val context = LocalContext.current
     val imageResId = remember(resourceName) {
-        val resolvedId = context.resources.getIdentifier(resourceName, "drawable", context.packageName)
+        val resolvedId =
+            context.resources.getIdentifier(resourceName, "drawable", context.packageName)
         if (resolvedId != 0) resolvedId else R.drawable.ic_broken_image
     }
 
@@ -117,7 +115,9 @@ fun GenreBox(
                 modifier = Modifier.fillMaxSize(0.5f),
                 colorFilter = ColorFilter.tint(colorResource(R.color.dark_yellow))
             )
+
             Spacer(modifier = Modifier.height(5.dp))
+
             Text(
                 text = genre.name,
                 textAlign = TextAlign.Center,
@@ -138,5 +138,5 @@ fun GenreScreenPreview() {
 @Preview
 @Composable
 fun GenreBoxPreview() {
-    GenreBox(Genre(28, "Action"), {})
+    GenreBox(Genre(28, "Action")) {}
 }

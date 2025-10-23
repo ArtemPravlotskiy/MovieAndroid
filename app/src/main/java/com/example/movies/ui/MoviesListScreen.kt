@@ -36,18 +36,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.example.movies.R
 import com.example.movies.data.mockMoviesResponse
 import com.example.movies.model.Movie
 import com.example.movies.viewModel.MoviesUiState
-import com.example.movies.R
 
 @Composable
 fun MoviesScreen(
     moviesUiState: MoviesUiState,
     retryAction: () -> Unit,
     onLoadMore: () -> Unit,
-    onShowMovieDetails: (Int) -> Unit,
-    modifier: Modifier = Modifier
+    onShowMovieDetails: (Int) -> Unit
 ) {
     when (moviesUiState) {
         is MoviesUiState.Loading -> LoadingScreen()
@@ -70,6 +69,7 @@ fun MoviesListScreen(
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
+        // background
         Image(
             painter = painterResource(R.drawable.movies),
             contentDescription = null,
@@ -77,6 +77,7 @@ fun MoviesListScreen(
             contentScale = ContentScale.Crop,
         )
 
+        // movie list
         LazyColumn(modifier = modifier) {
             itemsIndexed(movies) { index, movie ->
                 MovieCard(movie = movie, onClick = onShowMovieDetails)
@@ -96,7 +97,7 @@ fun MovieCard(
     modifier: Modifier = Modifier
 ) {
     val posterUrl = "https://image.tmdb.org/t/p/w500${movie.posterPath}"
-    Card (
+    Card(
         modifier = modifier
             .padding(start = 28.dp, end = 28.dp, bottom = 12.dp)
             .fillMaxWidth()
@@ -105,8 +106,9 @@ fun MovieCard(
         elevation = CardDefaults.cardElevation(4.dp),
         colors = CardDefaults.cardColors(Color.White)
     ) {
-        Row (modifier = modifier.padding(8.dp)) {
-            Box (
+        Row(modifier = modifier.padding(8.dp)) {
+            // Poster
+            Box(
                 modifier = Modifier
                     .fillMaxHeight()
                     .shadow( // TODO: Так и не получилось ничего адекватного
@@ -127,17 +129,22 @@ fun MovieCard(
                     placeholder = painterResource(R.drawable.loading_img),
                 )
             }
+
             Spacer(modifier = Modifier.width(8.dp))
+
             Column {
                 Text(
                     text = movie.title
                 )
+
                 Spacer(modifier = Modifier.height(8.dp))
+
                 Text(
                     text = movie.overview,
                     maxLines = 3
                 )
-                Box (
+
+                Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.BottomStart
                 ) {

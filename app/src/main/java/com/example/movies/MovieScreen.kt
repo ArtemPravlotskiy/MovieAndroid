@@ -13,25 +13,25 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.movies.ui.GenreScreen
+import com.example.movies.ui.MovieDetailsScreen
+import com.example.movies.ui.MoviesScreen
 import com.example.movies.ui.StartScreen
 import com.example.movies.viewModel.GenresViewModel
-import androidx.compose.runtime.collectAsState
-import androidx.navigation.NavType
-import androidx.navigation.navArgument
-import com.example.movies.ui.MovieDetailsScreen
-import com.example.movies.ui.MovieInfoScreen
-import com.example.movies.ui.MoviesScreen
 import com.example.movies.viewModel.MovieDetailsViewModel
 import com.example.movies.viewModel.MoviesViewModel
 
@@ -73,7 +73,7 @@ fun MovieAppBar(
                 }
             },
             colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = Color.Black,
+                containerColor = colorResource(R.color.dark_yellow),
                 titleContentColor = Color.White,
                 navigationIconContentColor = Color.White
             )
@@ -93,7 +93,7 @@ fun MovieApp(
     val baseRoute = route.substringBefore("/") // "Movies/28" → "Movies"
     val currentScreen = MovieScreen.valueOf(baseRoute)
 
-    Scaffold (
+    Scaffold(
         topBar = {
             MovieAppBar(
                 currentScreen = currentScreen,
@@ -118,7 +118,7 @@ fun MovieApp(
             }
 
             // Screen with list of genres
-            composable (route = MovieScreen.Genres.name) {
+            composable(route = MovieScreen.Genres.name) {
                 val genresViewModel: GenresViewModel = viewModel(factory = GenresViewModel.Factory)
                 val uiState by genresViewModel.genresUiState.collectAsState()
                 GenreScreen(
@@ -127,14 +127,14 @@ fun MovieApp(
                     showMovieList = { selectedGenre ->
                         navController.navigate("${MovieScreen.Movies.name}/${selectedGenre}")
                     }
-                ) // TODO delete mock data
+                )
             }
 
             // Screen with list of movies on genre
-            composable (
+            composable(
                 route = "${MovieScreen.Movies.name}/{genreId}",
                 arguments = listOf(navArgument("genreId") { type = NavType.StringType })
-                ) {
+            ) {
                 val genreId = backStackEntry?.arguments?.getString("genreId") ?: ""
                 val moviesViewModel: MoviesViewModel = viewModel(factory = MoviesViewModel.Factory)
                 val uiState by moviesViewModel.moviesUiState.collectAsState()
@@ -154,10 +154,10 @@ fun MovieApp(
             }
 
             // Screen movie details
-            composable (
+            composable(
                 route = "${MovieScreen.MovieInfo.name}/{movieId}",
                 arguments = listOf(navArgument("movieId") { type = NavType.StringType })
-            ){
+            ) {
                 val movieDetailsViewModel: MovieDetailsViewModel =
                     viewModel(factory = MovieDetailsViewModel.Factory)
                 val uiState by movieDetailsViewModel.movieDetailsUiState.collectAsState()
@@ -167,13 +167,12 @@ fun MovieApp(
                     movieDetailsViewModel.getMovieDetails(movieId)
                 }
 
-                MovieDetailsScreen (
+                MovieDetailsScreen(
                     movieDetailsUiState = uiState,
                     retryAction = { movieDetailsViewModel.getMovieDetails(movieId) },
                 )
             }
 
         }
-        // TODO()
     }
 }
