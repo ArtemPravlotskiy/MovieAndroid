@@ -1,7 +1,7 @@
 package com.example.movies.network
 
 import com.example.movies.model.GenresResponse
-import com.example.movies.model.Movie
+import com.example.movies.model.MovieDetails
 import com.example.movies.model.MoviesResponse
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -28,5 +28,5 @@ interface MoviesApiService {
         @Path("movie_id") movieId: String,
         @Query("api_key") key: String,
         @Query("language") language: String = "en"
-    ): Movie
+    ): MovieDetails
 }
