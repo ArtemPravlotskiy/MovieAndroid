@@ -4,10 +4,14 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -20,12 +24,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.movies.R
 import com.example.movies.model.Genre
 import com.example.movies.ui.theme.MoviesTheme
@@ -59,11 +67,17 @@ fun GenresGridScreen(
         Image( //TODO incorrect background image draw
             painter = painterResource(R.drawable.genres),
             contentDescription = null,
+            contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
         )
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
-            modifier = Modifier.padding(13.dp)
+            contentPadding = PaddingValues(
+                start = 28.dp,
+                end = 28.dp
+            ),
+            horizontalArrangement = Arrangement.spacedBy(28.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             items(genres) { genre ->
                 GenreBox(genre, showMovieList = showMovieList)
@@ -84,28 +98,30 @@ fun GenreBox(
     val context = LocalContext.current
     val imageResId = remember(resourceName) {
         val resolvedId = context.resources.getIdentifier(resourceName, "drawable", context.packageName)
-        if (resolvedId != 0) resolvedId else R.drawable.war
+        if (resolvedId != 0) resolvedId else R.drawable.ic_broken_image
     }
 
     Button(
         onClick = { showMovieList(genre.id) },
         colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
         shape = RoundedCornerShape(15.dp),
-        modifier = Modifier.fillMaxSize().aspectRatio(1f).padding(start = 15.dp, end = 15.dp, bottom = 2.dp) //TODO less padding top and bottom
+        modifier = Modifier.size(160.dp, 200.dp)
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center,
         ) {
             Image(
                 painter = painterResource(imageResId),
                 contentDescription = null,
-                modifier = Modifier.fillMaxSize(0.5f)
+                modifier = Modifier.fillMaxSize(0.5f),
+                colorFilter = ColorFilter.tint(colorResource(R.color.dark_yellow))
             )
-            Text( //TODO (not full text is displayed)
-                text = resourceName,
-                modifier = Modifier.fillMaxSize(0.2f),
-                textAlign = TextAlign.Center
+            Spacer(modifier = Modifier.height(5.dp))
+            Text(
+                text = genre.name,
+                textAlign = TextAlign.Center,
+                fontSize = 18.sp
             )
         }
     }

@@ -73,7 +73,7 @@ fun StartScreen (
                     fontSize = 15.sp
                 )
             }
-            Spacer(modifier = Modifier.height(71.dp))
+            Spacer(modifier = Modifier.height(75.dp))
         }
     }
 }
