@@ -27,13 +27,7 @@ class MovieDetailsViewModel (
     private val _movieDetailsUiState = MutableStateFlow<MovieDetailsUiState>(MovieDetailsUiState.Loading)
     val movieDetailsUiState: StateFlow<MovieDetailsUiState> = _movieDetailsUiState
 
-    private val movieId: String = ""
-
-    init {
-        getMovieDetails()
-    }
-
-    fun getMovieDetails() {
+    fun getMovieDetails(movieId: String) {
         viewModelScope.launch {
             _movieDetailsUiState.value = MovieDetailsUiState.Loading
             _movieDetailsUiState.value = try {

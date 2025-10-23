@@ -29,7 +29,10 @@ import com.example.movies.viewModel.GenresViewModel
 import androidx.compose.runtime.collectAsState
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import com.example.movies.ui.MovieDetailsScreen
+import com.example.movies.ui.MovieInfoScreen
 import com.example.movies.ui.MoviesScreen
+import com.example.movies.viewModel.MovieDetailsViewModel
 import com.example.movies.viewModel.MoviesViewModel
 
 // Available screens in app
@@ -143,11 +146,33 @@ fun MovieApp(
                 MoviesScreen(
                     moviesUiState = uiState,
                     retryAction = { moviesViewModel.loadMovies(genreId) },
-                    onLoadMore = { moviesViewModel.loadMovies(genreId) }
+                    onLoadMore = { moviesViewModel.loadMovies(genreId) },
+                    onShowMovieDetails = { selectedMovie ->
+                        navController.navigate("${MovieScreen.MovieInfo.name}/${selectedMovie}")
+                    }
                 )
             }
 
-            // TODO composable's
+            // Screen movie details
+            composable (
+                route = "${MovieScreen.MovieInfo.name}/{movieId}",
+                arguments = listOf(navArgument("movieId") { type = NavType.StringType })
+            ){
+                val movieDetailsViewModel: MovieDetailsViewModel =
+                    viewModel(factory = MovieDetailsViewModel.Factory)
+                val uiState by movieDetailsViewModel.movieDetailsUiState.collectAsState()
+                val movieId = backStackEntry?.arguments?.getString("movieId") ?: ""
+
+                LaunchedEffect(movieId) {
+                    movieDetailsViewModel.getMovieDetails(movieId)
+                }
+
+                MovieDetailsScreen (
+                    movieDetailsUiState = uiState,
+                    retryAction = { movieDetailsViewModel.getMovieDetails(movieId) },
+                )
+            }
+
         }
         // TODO()
     }

@@ -40,6 +40,7 @@ fun MoviesScreen(
     moviesUiState: MoviesUiState,
     retryAction: () -> Unit,
     onLoadMore: () -> Unit,
+    onShowMovieDetails: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     when (moviesUiState) {
@@ -47,7 +48,8 @@ fun MoviesScreen(
         is MoviesUiState.Error -> ErrorScreen(retryAction)
         is MoviesUiState.Success -> MoviesListScreen(
             moviesUiState.movies,
-            onLoadMore = onLoadMore
+            onLoadMore = onLoadMore,
+            onShowMovieDetails = onShowMovieDetails
         )
     }
 }
@@ -56,11 +58,12 @@ fun MoviesScreen(
 fun MoviesListScreen(
     movies: List<Movie>,
     onLoadMore: () -> Unit,
+    onShowMovieDetails: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(modifier = modifier) {
         itemsIndexed(movies) { index, movie ->
-            MovieCard(movie = movie, {})
+            MovieCard(movie = movie, onClick = onShowMovieDetails)
 
             if (index == movies.lastIndex) {
                 onLoadMore()
@@ -72,7 +75,7 @@ fun MoviesListScreen(
 @Composable
 fun MovieCard(
     movie: Movie,
-    onClick: () -> Unit,
+    onClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val posterUrl = "https://image.tmdb.org/t/p/w500${movie.posterPath}"
@@ -80,7 +83,7 @@ fun MovieCard(
         modifier = modifier
             .padding(8.dp)
             .fillMaxWidth()
-            .clickable {onClick()},
+            .clickable { onClick(movie.id) },
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Row (modifier = modifier.padding(8.dp)) {

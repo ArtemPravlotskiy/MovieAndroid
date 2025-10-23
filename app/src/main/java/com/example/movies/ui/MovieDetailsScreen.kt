@@ -31,6 +31,22 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.movies.R
 import com.example.movies.model.MovieDetails
+import com.example.movies.viewModel.MovieDetailsUiState
+import com.example.movies.viewModel.MoviesUiState
+
+@Composable
+fun MovieDetailsScreen (
+    movieDetailsUiState: MovieDetailsUiState,
+    retryAction: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    when (movieDetailsUiState) {
+        is MovieDetailsUiState.Loading -> LoadingScreen()
+        is MovieDetailsUiState.Error -> ErrorScreen(retryAction = retryAction)
+        is MovieDetailsUiState.Success -> MovieInfoScreen(
+            movie = movieDetailsUiState.movieDetails)
+    }
+}
 
 @Composable
 fun MovieInfoScreen (
@@ -67,24 +83,13 @@ fun MovieInfoScreen (
                 Row () {
                     AsyncImage(
                         model = ImageRequest.Builder(LocalContext.current)
-                            .data("https://image.tmdb.org/t/p/w500${movie.posterPath}"),
+                            .data("https://image.tmdb.org/t/p/w500${movie.posterPath}")
+                            .build(),
                         contentDescription = null,
                         modifier = Modifier
                             .fillMaxWidth(0.5f)
                     )
-                    /*Image(
-                        painter = painterResource(R.drawable.adventure),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .fillMaxSize(0.4f)
-                            .padding(start = 20.dp, end = 20.dp)
-                            .size(90.dp)
-                            .shadow(
-                                elevation = 40.dp,
-                                ambientColor = Color.White,
-                                spotColor = Color.White,
-                            )
-                    )*/
+
                     // TODO вынести в отдельную функцию
                     Column (
                         verticalArrangement = Arrangement.Bottom,
