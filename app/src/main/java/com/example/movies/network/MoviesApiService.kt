@@ -24,7 +24,7 @@ interface MoviesApiService {
     ): MoviesResponse
 
     @GET("movie/{movie_id}")
-    suspend fun getMovieInfo(
+    suspend fun getMovieDetails(
         @Path("movie_id") movieId: String,
         @Query("api_key") key: String,
         @Query("language") language: String = "en"
