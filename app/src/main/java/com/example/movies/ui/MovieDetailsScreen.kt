@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -80,60 +82,82 @@ fun MovieInfoScreen (
                         fontSize = 30.sp
                     )
                 }
-                Row () {
-                    AsyncImage(
-                        model = ImageRequest.Builder(LocalContext.current)
-                            .data("https://image.tmdb.org/t/p/w500${movie.posterPath}")
-                            .build(),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .fillMaxWidth(0.5f)
-                    )
-
-                    // TODO вынести в отдельную функцию
-                    Column (
-                        verticalArrangement = Arrangement.Bottom,
-                        modifier = Modifier.padding(bottom = 10.dp)
+                Box(
+                    modifier = Modifier.fillMaxHeight()
+                ) {
+                    Row(
+                        modifier = Modifier.height(270.dp)
                     ) {
                         Box(
                             modifier = Modifier
-                                .clip(RoundedCornerShape(5.dp))
-                                .background(Color.White)
+                                .fillMaxWidth(0.5f)
+                                .padding(10.dp)
+                                .shadow(
+                                    elevation = 20.dp,
+                                    shape = RoundedCornerShape(12.dp),
+                                    ambientColor = Color.White,
+                                    spotColor = Color.White
+                                )
+                                .clip(RoundedCornerShape(12.dp))
                         ) {
-                            Text(
-                                text = movie.runtime.toString() + " min.",
-                                color = Color.Gray,
-                                modifier = Modifier.padding(5.dp)
+                            AsyncImage(
+                                model = ImageRequest.Builder(LocalContext.current)
+                                    .data("https://image.tmdb.org/t/p/w500${movie.posterPath}")
+                                    .build(),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .fillMaxSize()
                             )
                         }
-                        Spacer(modifier = Modifier.height(10.dp))
-                        Box(
+
+                        // TODO вынести в отдельную функцию
+                        Column(
+                            verticalArrangement = Arrangement.Bottom,
                             modifier = Modifier
-                                .clip(RoundedCornerShape(5.dp))
-                                .background(Color.White)
+                                .padding(bottom = 10.dp)
+                                .fillMaxHeight()
                         ) {
-                            Text(
-                                text = movie.releaseDate,
-                                color = Color.Gray,
-                                modifier = Modifier.padding(5.dp)
-                            )
-                        }
-                        Spacer(modifier = Modifier.height(10.dp))
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(5.dp))
-                                .background(Color.White)
-                        ) {
-                            Text(
-                                text = movie.tagline,
-                                color = Color.Gray,
-                                modifier = Modifier.padding(5.dp)
-                            )
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(5.dp))
+                                    .background(Color.White)
+                            ) {
+                                Text(
+                                    text = movie.runtime.toString() + " min.",
+                                    color = Color.Gray,
+                                    modifier = Modifier.padding(5.dp)
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(10.dp))
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(5.dp))
+                                    .background(Color.White)
+                            ) {
+                                Text(
+                                    text = movie.releaseDate,
+                                    color = Color.Gray,
+                                    modifier = Modifier.padding(5.dp)
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(10.dp))
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(5.dp))
+                                    .background(Color.White)
+                            ) {
+                                Text(
+                                    text = movie.tagline,
+                                    color = Color.Gray,
+                                    modifier = Modifier.padding(5.dp)
+                                )
+                            }
                         }
                     }
                 }
 
                 Row (
+                    verticalAlignment = Alignment.Bottom,
                     modifier = Modifier.padding(10.dp)
                 ) {
                     Box(
@@ -151,10 +175,17 @@ fun MovieInfoScreen (
                         )
                     }
 
-                    Text(
-                        text = movie.genres.joinToString(separator = ", ") { it.name },
-                        color = colorResource(R.color.dark_yellow)
-                    )
+                    Box(
+                        contentAlignment = Alignment.BottomStart,
+                        modifier = Modifier.fillMaxHeight()
+                            .padding(10.dp)
+                    ) {
+                        Text(
+                            text = movie.genres.joinToString(separator = ", ") { it.name },
+                            color = colorResource(R.color.dark_yellow),
+                            fontSize = 20.sp
+                        )
+                    }
                 }
             }
         }
@@ -164,9 +195,10 @@ fun MovieInfoScreen (
                 .weight(1f, fill = true)
                 .clip(RoundedCornerShape(10.dp))
                 .background(Color.Black)
+                .fillMaxWidth()
         ) {
             Text(
-                text = movie.title,
+                text = movie.overview,
                 color = Color.White,
                 modifier = Modifier.padding(10.dp)
             )
