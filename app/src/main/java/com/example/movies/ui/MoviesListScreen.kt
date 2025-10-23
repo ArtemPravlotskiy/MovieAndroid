@@ -1,9 +1,12 @@
 package com.example.movies.ui
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -12,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
@@ -19,18 +23,20 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.movies.data.mockMoviesResponse
-import com.example.movies.model.Genre
 import com.example.movies.model.Movie
 import com.example.movies.viewModel.MoviesUiState
 import com.example.movies.R
@@ -61,12 +67,23 @@ fun MoviesListScreen(
     onShowMovieDetails: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LazyColumn(modifier = modifier) {
-        itemsIndexed(movies) { index, movie ->
-            MovieCard(movie = movie, onClick = onShowMovieDetails)
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Image(
+            painter = painterResource(R.drawable.movies),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop,
+        )
 
-            if (index == movies.lastIndex) {
-                onLoadMore()
+        LazyColumn(modifier = modifier) {
+            itemsIndexed(movies) { index, movie ->
+                MovieCard(movie = movie, onClick = onShowMovieDetails)
+
+                if (index == movies.lastIndex) {
+                    onLoadMore()
+                }
             }
         }
     }
@@ -81,22 +98,35 @@ fun MovieCard(
     val posterUrl = "https://image.tmdb.org/t/p/w500${movie.posterPath}"
     Card (
         modifier = modifier
-            .padding(8.dp)
+            .padding(start = 28.dp, end = 28.dp, bottom = 12.dp)
             .fillMaxWidth()
+            .height(170.dp)
             .clickable { onClick(movie.id) },
-        elevation = CardDefaults.cardElevation(4.dp)
+        elevation = CardDefaults.cardElevation(4.dp),
+        colors = CardDefaults.cardColors(Color.White)
     ) {
         Row (modifier = modifier.padding(8.dp)) {
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(posterUrl)
-                    .crossfade(true)
-                    .build(),
-                contentDescription = movie.title,
-                error = painterResource(R.drawable.ic_broken_image),
-                placeholder = painterResource(R.drawable.loading_img),
-                modifier = Modifier.size(100.dp)
-            )
+            Box (
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .shadow( // TODO: Так и не получилось ничего адекватного
+                        elevation = 100.dp,
+                        shape = RoundedCornerShape(12.dp),
+                        ambientColor = Color.Black,
+                        spotColor = Color.Black
+                    )
+                    .clip(RoundedCornerShape(12.dp))
+            ) {
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(posterUrl)
+                        .crossfade(true)
+                        .build(),
+                    contentDescription = movie.title,
+                    error = painterResource(R.drawable.ic_broken_image),
+                    placeholder = painterResource(R.drawable.loading_img),
+                )
+            }
             Spacer(modifier = Modifier.width(8.dp))
             Column {
                 Text(
@@ -104,10 +134,15 @@ fun MovieCard(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = movie.overview
+                    text = movie.overview,
+                    maxLines = 3
                 )
-                Spacer(modifier = Modifier.height(8.dp))
-                RatingStars(movie.voteAverage)
+                Box (
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.BottomStart
+                ) {
+                    RatingStars(movie.voteAverage)
+                }
             }
         }
     }
@@ -120,7 +155,8 @@ fun RatingStars(rating: Double) {
             Icon(
                 imageVector = Icons.Default.Star,
                 contentDescription = null,
-                tint = if (index < rating) Color.Yellow else Color.Gray
+                tint = if (index < rating) colorResource(R.color.dark_yellow) else Color.Gray,
+                modifier = Modifier.size(21.dp)
             )
         }
     }
