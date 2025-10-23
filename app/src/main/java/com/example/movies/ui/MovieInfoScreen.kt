@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -32,13 +33,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.example.movies.data.mockMoviesResponse
 import com.example.movies.model.Movie
 import com.example.movies.R
+import com.example.movies.model.MovieDetails
 
 @Composable
 fun MovieInfoScreen (
-    movie: Movie,
+    movie: MovieDetails,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -58,7 +62,8 @@ fun MovieInfoScreen (
             ) {
                 Box (
                     contentAlignment = Alignment.Center,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
                         .padding(bottom = 30.dp, start = 10.dp, end = 10.dp)
                 ) {
                     Text(
@@ -68,7 +73,14 @@ fun MovieInfoScreen (
                     )
                 }
                 Row () {
-                    Image(
+                    AsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data("https://image.tmdb.org/t/p/w500${movie.posterPath}"),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxWidth(0.5f)
+                    )
+                    /*Image(
                         painter = painterResource(R.drawable.adventure),
                         contentDescription = null,
                         modifier = Modifier
@@ -80,7 +92,8 @@ fun MovieInfoScreen (
                                 ambientColor = Color.White,
                                 spotColor = Color.White,
                             )
-                    )
+                    )*/
+                    // TODO вынести в отдельную функцию
                     Column (
                         verticalArrangement = Arrangement.Bottom,
                         modifier = Modifier.padding(bottom = 10.dp)
@@ -91,7 +104,7 @@ fun MovieInfoScreen (
                                 .background(Color.White)
                         ) {
                             Text(
-                                text = "Test1",
+                                text = movie.runtime.toString() + " min.",
                                 color = Color.Gray,
                                 modifier = Modifier.padding(5.dp)
                             )
@@ -103,7 +116,7 @@ fun MovieInfoScreen (
                                 .background(Color.White)
                         ) {
                             Text(
-                                text = "Test1Test1",
+                                text = movie.releaseDate,
                                 color = Color.Gray,
                                 modifier = Modifier.padding(5.dp)
                             )
@@ -115,7 +128,7 @@ fun MovieInfoScreen (
                                 .background(Color.White)
                         ) {
                             Text(
-                                text = "Test1Test1Test1",
+                                text = movie.tagline,
                                 color = Color.Gray,
                                 modifier = Modifier.padding(5.dp)
                             )
@@ -128,7 +141,8 @@ fun MovieInfoScreen (
                 ) {
                     Box(
                         contentAlignment = Alignment.Center,
-                        modifier = Modifier.size(50.dp)
+                        modifier = Modifier
+                            .size(50.dp)
                             .clip(CircleShape)
                             .background(colorResource(R.color.dark_yellow))
                     ) {
@@ -141,8 +155,8 @@ fun MovieInfoScreen (
                     }
 
                     Text(
-                        text = "Test1, Test2, Test3",
-                        color = Color.White
+                        text = movie.genres.joinToString(separator = ", ") { it.name },
+                        color = colorResource(R.color.dark_yellow)
                     )
                 }
             }
@@ -155,7 +169,7 @@ fun MovieInfoScreen (
                 .background(Color.Black)
         ) {
             Text(
-                text = "DescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescription",
+                text = movie.title,
                 color = Color.White,
                 modifier = Modifier.padding(10.dp)
             )
@@ -166,5 +180,5 @@ fun MovieInfoScreen (
 @Preview(showSystemUi = true)
 @Composable
 fun MovieInfoScreenPreview() {
-    MovieInfoScreen(mockMoviesResponse.movies[0])
+    //MovieInfoScreen(mockMoviesResponse.movies[0])
 }
