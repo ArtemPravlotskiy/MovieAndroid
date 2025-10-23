@@ -1,5 +1,6 @@
 package com.example.movies.ui
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,8 +24,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -34,112 +37,133 @@ import coil.request.ImageRequest
 import com.example.movies.R
 import com.example.movies.model.MovieDetails
 import com.example.movies.viewModel.MovieDetailsUiState
-import com.example.movies.viewModel.MoviesUiState
 
 @Composable
-fun MovieDetailsScreen (
+fun MovieDetailsScreen(
     movieDetailsUiState: MovieDetailsUiState,
-    retryAction: () -> Unit,
-    modifier: Modifier = Modifier
+    retryAction: () -> Unit
 ) {
     when (movieDetailsUiState) {
         is MovieDetailsUiState.Loading -> LoadingScreen()
         is MovieDetailsUiState.Error -> ErrorScreen(retryAction = retryAction)
         is MovieDetailsUiState.Success -> MovieInfoScreen(
-            movie = movieDetailsUiState.movieDetails)
+            movie = movieDetailsUiState.movieDetails
+        )
     }
 }
 
 @Composable
-fun MovieInfoScreen (
+fun MovieInfoScreen(
     movie: MovieDetails,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp)
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(10.dp))
-                .background(Color.Black)
+    Box {
+        Image(
+            painter = painterResource(R.drawable.movies),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
+
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(end = 28.dp, start = 28.dp, bottom = 14.dp, top = 14.dp)
         ) {
-            Column (
-                modifier = Modifier.padding(8.dp)
+            FirstBlock(movie = movie)
+
+            Spacer(modifier = Modifier.height(5.dp))
+
+            SecondBlock(movie = movie)
+        }
+    }
+}
+
+@Composable
+fun FirstBlock(
+    movie: MovieDetails
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(10.dp))
+            .background(Color.Black)
+    ) {
+        Column(
+            modifier = Modifier.padding(8.dp)
+        ) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 30.dp, start = 10.dp, end = 10.dp)
             ) {
-                Box (
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 30.dp, start = 10.dp, end = 10.dp)
+                Text(
+                    text = movie.title,
+                    color = Color.White,
+                    fontSize = 30.sp
+                )
+            }
+            Box(
+                modifier = Modifier.fillMaxHeight()
+            ) {
+                Row(
+                    modifier = Modifier.height(270.dp)
                 ) {
-                    Text(
-                        text = movie.title,
-                        color = Color.White,
-                        fontSize = 30.sp
-                    )
-                }
-                Box(
-                    modifier = Modifier.fillMaxHeight()
-                ) {
-                    Row(
-                        modifier = Modifier.height(270.dp)
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth(0.5f)
+                            .padding(10.dp)
+                            .shadow(
+                                elevation = 20.dp,
+                                shape = RoundedCornerShape(12.dp),
+                                ambientColor = Color.White,
+                                spotColor = Color.White
+                            )
+                            .clip(RoundedCornerShape(12.dp))
+                    ) {
+                        AsyncImage(
+                            model = ImageRequest.Builder(LocalContext.current)
+                                .data("https://image.tmdb.org/t/p/w500${movie.posterPath}")
+                                .build(),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .fillMaxSize()
+                        )
+                    }
+
+                    // TODO вынести в отдельную функцию
+                    Column(
+                        verticalArrangement = Arrangement.Bottom,
+                        modifier = Modifier
+                            .padding(bottom = 10.dp)
+                            .fillMaxHeight()
                     ) {
                         Box(
                             modifier = Modifier
-                                .fillMaxWidth(0.5f)
-                                .padding(10.dp)
-                                .shadow(
-                                    elevation = 20.dp,
-                                    shape = RoundedCornerShape(12.dp),
-                                    ambientColor = Color.White,
-                                    spotColor = Color.White
-                                )
-                                .clip(RoundedCornerShape(12.dp))
+                                .clip(RoundedCornerShape(5.dp))
+                                .background(Color.White)
                         ) {
-                            AsyncImage(
-                                model = ImageRequest.Builder(LocalContext.current)
-                                    .data("https://image.tmdb.org/t/p/w500${movie.posterPath}")
-                                    .build(),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .fillMaxSize()
+                            Text(
+                                text = movie.runtime.toString() + " min.",
+                                color = Color.Gray,
+                                modifier = Modifier.padding(5.dp)
                             )
                         }
-
-                        // TODO вынести в отдельную функцию
-                        Column(
-                            verticalArrangement = Arrangement.Bottom,
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Box(
                             modifier = Modifier
-                                .padding(bottom = 10.dp)
-                                .fillMaxHeight()
+                                .clip(RoundedCornerShape(5.dp))
+                                .background(Color.White)
                         ) {
-                            Box(
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(5.dp))
-                                    .background(Color.White)
-                            ) {
-                                Text(
-                                    text = movie.runtime.toString() + " min.",
-                                    color = Color.Gray,
-                                    modifier = Modifier.padding(5.dp)
-                                )
-                            }
-                            Spacer(modifier = Modifier.height(10.dp))
-                            Box(
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(5.dp))
-                                    .background(Color.White)
-                            ) {
-                                Text(
-                                    text = movie.releaseDate,
-                                    color = Color.Gray,
-                                    modifier = Modifier.padding(5.dp)
-                                )
-                            }
+                            Text(
+                                text = movie.releaseDate,
+                                color = Color.Gray,
+                                modifier = Modifier.padding(5.dp)
+                            )
+                        }
+                        if (movie.tagline.isNotBlank()) {
                             Spacer(modifier = Modifier.height(10.dp))
                             Box(
                                 modifier = Modifier
@@ -155,54 +179,59 @@ fun MovieInfoScreen (
                         }
                     }
                 }
+            }
 
-                Row (
-                    verticalAlignment = Alignment.Bottom,
-                    modifier = Modifier.padding(10.dp)
+            Row(
+                verticalAlignment = Alignment.Bottom,
+                modifier = Modifier.padding(10.dp)
+            ) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .size(50.dp)
+                        .clip(CircleShape)
+                        .background(colorResource(R.color.dark_yellow))
                 ) {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier
-                            .size(50.dp)
-                            .clip(CircleShape)
-                            .background(colorResource(R.color.dark_yellow))
-                    ) {
-                        Text(
-                            text = String.format("%.1f", movie.voteAverage),
-                            color = Color.Black,
-                            fontSize = 25.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
+                    Text(
+                        text = String.format("%.1f", movie.voteAverage),
+                        color = Color.Black,
+                        fontSize = 25.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
 
-                    Box(
-                        contentAlignment = Alignment.BottomStart,
-                        modifier = Modifier.fillMaxHeight()
-                            .padding(10.dp)
-                    ) {
-                        Text(
-                            text = movie.genres.joinToString(separator = ", ") { it.name },
-                            color = colorResource(R.color.dark_yellow),
-                            fontSize = 20.sp
-                        )
-                    }
+                Box(
+                    contentAlignment = Alignment.BottomStart,
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .padding(10.dp)
+                ) {
+                    Text(
+                        text = movie.genres.joinToString(separator = ", ") { it.name },
+                        color = colorResource(R.color.dark_yellow),
+                        fontSize = 20.sp
+                    )
                 }
             }
         }
-        Spacer(modifier = Modifier.height(5.dp))
-        Box(
-            modifier = Modifier
-                .weight(1f, fill = true)
-                .clip(RoundedCornerShape(10.dp))
-                .background(Color.Black)
-                .fillMaxWidth()
-        ) {
-            Text(
-                text = movie.overview,
-                color = Color.White,
-                modifier = Modifier.padding(10.dp)
-            )
-        }
+    }
+}
+
+@Composable
+fun SecondBlock(
+    movie: MovieDetails
+) {
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(10.dp))
+            .background(Color.Black)
+            .fillMaxWidth()
+    ) {
+        Text(
+            text = movie.overview.ifBlank { "No description" },
+            color = Color.White,
+            modifier = Modifier.padding(10.dp)
+        )
     }
 }
 
