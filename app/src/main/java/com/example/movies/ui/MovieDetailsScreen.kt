@@ -37,6 +37,7 @@ import coil.request.ImageRequest
 import com.example.movies.R
 import com.example.movies.model.MovieDetails
 import com.example.movies.viewModel.MovieDetailsUiState
+import java.util.Locale
 
 @Composable
 fun MovieDetailsScreen(
@@ -133,7 +134,6 @@ fun FirstBlock(
                         )
                     }
 
-                    // TODO вынести в отдельную функцию
                     Column(
                         verticalArrangement = Arrangement.Bottom,
                         modifier = Modifier
@@ -193,7 +193,7 @@ fun FirstBlock(
                         .background(colorResource(R.color.dark_yellow))
                 ) {
                     Text(
-                        text = String.format("%.1f", movie.voteAverage),
+                        text = String.format(Locale.US, "%.1f", movie.voteAverage),
                         color = Color.Black,
                         fontSize = 25.sp,
                         fontWeight = FontWeight.Bold

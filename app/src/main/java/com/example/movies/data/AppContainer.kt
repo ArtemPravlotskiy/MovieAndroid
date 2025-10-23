@@ -23,15 +23,11 @@ class DefaultAppContainer : AppContainer {
         level = HttpLoggingInterceptor.Level.BODY
     }
 
-    private val okHttpClient = OkHttpClient.Builder()
-        .addInterceptor(loggingInterceptor)
-        .build()
+    private val okHttpClient = OkHttpClient.Builder().addInterceptor(loggingInterceptor).build()
 
-    private val retrofit: Retrofit = Retrofit.Builder()
-        .client(okHttpClient)
+    private val retrofit: Retrofit = Retrofit.Builder().client(okHttpClient)
         .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
-        .baseUrl(baseUrl)
-        .build()
+        .baseUrl(baseUrl).build()
 
     private val retrofitService: MoviesApiService by lazy {
         retrofit.create(MoviesApiService::class.java)
