@@ -9,7 +9,9 @@ data class Genre(
     val id: Int,
 
     @SerialName("name")
-    val name: String
+    val name: String,
+
+    val englishName: String = ""
 )
 
 @Serializable

@@ -88,7 +88,7 @@ fun GenreBox(
     genre: Genre,
     showMovieList: (Int) -> Unit
 ) {
-    val resourceName = genre.name
+    val resourceName = genre.englishName
         .lowercase()
         .replace(" ", "")
 
