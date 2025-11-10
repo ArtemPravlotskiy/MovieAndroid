@@ -8,8 +8,9 @@ interface MovieDetailsRepository {
 }
 
 class NetworkMovieDetailsRepository(
-    private val moviesApiService: MoviesApiService
+    private val moviesApiService: MoviesApiService,
+    private val language: String
 ) : MovieDetailsRepository {
     override suspend fun getMovieDetails(movieId: String): MovieDetails =
-        moviesApiService.getMovieDetails(movieId = movieId, key = ApiKey.API_KEY)
+        moviesApiService.getMovieDetails(movieId = movieId, key = ApiKey.API_KEY, language = language)
 }

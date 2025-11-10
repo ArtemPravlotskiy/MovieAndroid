@@ -40,10 +40,10 @@ class DefaultAppContainer : AppContainer {
     }
 
     override val moviesRepository: MoviesRepository by lazy {
-        NetworkMoviesRepository(retrofitService)
+        NetworkMoviesRepository(retrofitService, language)
     }
 
     override val movieDetailsRepository: MovieDetailsRepository by lazy {
-        NetworkMovieDetailsRepository(retrofitService)
+        NetworkMovieDetailsRepository(retrofitService, language)
     }
 }
