@@ -9,4 +9,5 @@
     <string name="loading">Загрузка</string>
     <string name="failed_load">Ошибка загрузки</string>
     <string name="retry">Повторить</string>
+    <string name="no_description">Нет описания</string>
 </resources>
