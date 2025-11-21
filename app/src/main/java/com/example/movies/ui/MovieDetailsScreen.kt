@@ -135,6 +135,8 @@ fun FirstBlock(
                                 .data("https://tmdb-proxy-production-4fbb.up.railway.app/image?path=${movie.posterPath}")
                                 .build(),
                             contentDescription = null,
+                            placeholder = painterResource(R.drawable.loading_img),
+                            error = painterResource(R.drawable.ic_broken_image),
                             modifier = Modifier
                                 .fillMaxSize()
                         )
