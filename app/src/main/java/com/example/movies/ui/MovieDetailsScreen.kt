@@ -132,7 +132,7 @@ fun FirstBlock(
                     ) {
                         AsyncImage(
                             model = ImageRequest.Builder(LocalContext.current)
-                                .data("https://image.tmdb.org/t/p/w500${movie.posterPath}")
+                                .data("https://tmdb-proxy-production-4fbb.up.railway.app/image?path=${movie.posterPath}")
                                 .build(),
                             contentDescription = null,
                             modifier = Modifier

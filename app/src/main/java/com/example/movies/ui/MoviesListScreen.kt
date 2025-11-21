@@ -96,7 +96,7 @@ fun MovieCard(
     onClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val posterUrl = "https://image.tmdb.org/t/p/w500${movie.posterPath}"
+    val posterUrl = "https://tmdb-proxy-production-4fbb.up.railway.app/image?path=${movie.posterPath}"
     Card(
         modifier = modifier
             .padding(start = 28.dp, end = 28.dp, bottom = 12.dp)
