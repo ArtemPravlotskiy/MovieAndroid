@@ -25,9 +25,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -96,7 +95,8 @@ fun MovieCard(
     onClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val posterUrl = "https://tmdb-proxy-production-4fbb.up.railway.app/image?path=${movie.posterPath}"
+    val posterUrl =
+        "https://tmdb-proxy-production-4fbb.up.railway.app/image?path=${movie.posterPath}"
     Card(
         modifier = modifier
             .padding(start = 28.dp, end = 28.dp, bottom = 12.dp)
@@ -108,16 +108,12 @@ fun MovieCard(
     ) {
         Row(modifier = modifier.padding(8.dp)) {
             // Poster
-            Box(
+            Card(
+                shape = RoundedCornerShape(12.dp),
+                elevation = CardDefaults.cardElevation(30.dp),
                 modifier = Modifier
                     .fillMaxHeight()
-                    .shadow( // TODO: Так и не получилось ничего адекватного
-                        elevation = 100.dp,
-                        shape = RoundedCornerShape(12.dp),
-                        ambientColor = Color.Black,
-                        spotColor = Color.Black
-                    )
-                    .clip(RoundedCornerShape(12.dp))
+                    .fillMaxWidth(0.3f)
             ) {
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)

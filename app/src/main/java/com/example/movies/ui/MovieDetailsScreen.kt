@@ -17,12 +17,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -118,17 +119,12 @@ fun FirstBlock(
                 ) {
 
                     // Poster
-                    Box(
+                    Card(
+                        shape = RoundedCornerShape(12.dp),
+                        elevation = CardDefaults.cardElevation(12.dp),
                         modifier = Modifier
                             .fillMaxWidth(0.5f)
                             .padding(10.dp)
-                            .shadow(
-                                elevation = 20.dp,
-                                shape = RoundedCornerShape(12.dp),
-                                ambientColor = Color.White,
-                                spotColor = Color.White
-                            )
-                            .clip(RoundedCornerShape(12.dp))
                     ) {
                         AsyncImage(
                             model = ImageRequest.Builder(LocalContext.current)
@@ -138,7 +134,8 @@ fun FirstBlock(
                             placeholder = painterResource(R.drawable.loading_img),
                             error = painterResource(R.drawable.ic_broken_image),
                             modifier = Modifier
-                                .fillMaxSize()
+                                .fillMaxSize(),
+                            contentScale = ContentScale.Crop
                         )
                     }
 
