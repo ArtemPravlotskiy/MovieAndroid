@@ -16,7 +16,8 @@ interface AppContainer {
 }
 
 class DefaultAppContainer : AppContainer {
-    private val baseUrl = "https://api.themoviedb.org/3/"
+//    private val baseUrl = "https://api.themoviedb.org/3/"
+    private val baseUrl = "https://tmdb-proxy-production-4fbb.up.railway.app/"
 
     val json = Json { ignoreUnknownKeys = true }
     private val language = Locale.getDefault().language

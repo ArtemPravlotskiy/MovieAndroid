@@ -12,8 +12,8 @@ class NetworkGenresRepository(
     private val language: String
 ) : GenresRepository {
     override suspend fun getGenres(): List<Genre> {
-        val localizedGenres = movieApiService.getGenres(ApiKey.API_KEY, language).genres
-        val englishGenres = movieApiService.getGenres(ApiKey.API_KEY, "en").genres
+        val localizedGenres = movieApiService.getGenres(language = language).genres
+        val englishGenres = movieApiService.getGenres(language = "en").genres
         val englishGenresMap = englishGenres.associateBy { it.id }
 
         return localizedGenres.map { localizedGenre ->

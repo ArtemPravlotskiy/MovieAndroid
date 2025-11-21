@@ -9,10 +9,10 @@ import retrofit2.http.Query
 
 interface MoviesApiService {
 
-    @GET("genre/movie/list")
+    @GET("proxy")
     suspend fun getGenres(
-        @Query("api_key") key: String,
-        @Query("language") language: String = "en"
+        @Query("endpoint") endpoint: String = "genre/movie/list",
+        @Query("language") language: String = "ru"
     ): GenresResponse
 
     @GET("discover/movie")
