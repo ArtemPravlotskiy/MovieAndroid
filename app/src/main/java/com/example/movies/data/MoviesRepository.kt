@@ -12,5 +12,5 @@ class NetworkMoviesRepository(
     private val language: String
 ) : MoviesRepository {
     override suspend fun getMovies(genreId: String, page: Int): List<Movie> =
-        movieApiService.getMovies(ApiKey.API_KEY, genreId, page, language).movies
+        movieApiService.getMovies(genreId = genreId, page = page, language = language).movies
 }

@@ -12,5 +12,5 @@ class NetworkMovieDetailsRepository(
     private val language: String
 ) : MovieDetailsRepository {
     override suspend fun getMovieDetails(movieId: String): MovieDetails =
-        moviesApiService.getMovieDetails(movieId = movieId, key = ApiKey.API_KEY, language = language)
+        moviesApiService.getMovieDetails(endpoint = "movie/$movieId", language = language)
 }
