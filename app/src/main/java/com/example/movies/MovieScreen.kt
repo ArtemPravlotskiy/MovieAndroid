@@ -1,5 +1,6 @@
 package com.example.movies
 
+import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -140,7 +141,9 @@ fun MovieApp(
                 val uiState by moviesViewModel.moviesUiState.collectAsState()
 
                 LaunchedEffect(genreId) {
-                    moviesViewModel.loadMovies(genreId)
+                    if (genreId.isNotEmpty()) {
+                        moviesViewModel.loadMovies(genreId)
+                    }
                 }
 
                 MoviesScreen(
@@ -164,7 +167,9 @@ fun MovieApp(
                 val movieId = backStackEntry?.arguments?.getString("movieId") ?: ""
 
                 LaunchedEffect(movieId) {
-                    movieDetailsViewModel.getMovieDetails(movieId)
+                    if (movieId.isNotEmpty()) {
+                        movieDetailsViewModel.getMovieDetails(movieId)
+                    }
                 }
 
                 MovieDetailsScreen(
