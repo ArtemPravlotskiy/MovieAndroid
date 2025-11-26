@@ -10,4 +10,6 @@
     <string name="failed_load">Ошибка загрузки</string>
     <string name="retry">Повторить</string>
     <string name="no_description">Нет описания</string>
+    <string name="setting_language">ЯЗЫК</string>
+    <string name="setting_text_scale">РАЗМЕР ТЕКСТА</string>
 </resources>

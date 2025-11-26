@@ -10,4 +10,6 @@
     <string name="failed_load">Failed to load</string>
     <string name="retry">Retry</string>
     <string name="no_description">No description</string>
+    <string name="setting_language">LANGUAGE</string>
+    <string name="setting_text_scale">TEXT SCALE</string>
 </resources>
