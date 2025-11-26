@@ -36,6 +36,8 @@ class GenresViewModel(
             _genresUiState.value = GenresUiState.Loading
             _genresUiState.value = try {
                 GenresUiState.Success(genresRepository.getGenres())
+
+                //TODO: Make right genre list with img path
             } catch (_: IOException) {
                 GenresUiState.Error
             } catch (_: HttpException) {

@@ -11,8 +11,12 @@ data class Genre(
     @SerialName("name")
     val name: String,
 
+    // -val imagePath: String?
     val englishName: String = ""
 )
+
+//TODO: New genre usable
+// GenreDTO (-englishname)
 
 @Serializable
 data class GenresResponse(
