@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -113,7 +114,7 @@ fun GenreBox(
                 painter = painterResource(imageResId),
                 contentDescription = null,
                 modifier = Modifier.fillMaxSize(0.5f),
-                colorFilter = ColorFilter.tint(colorResource(R.color.dark_yellow))
+                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
             )
 
             Spacer(modifier = Modifier.height(5.dp))
@@ -121,7 +122,8 @@ fun GenreBox(
             Text(
                 text = genre.name,
                 textAlign = TextAlign.Center,
-                fontSize = 18.sp
+                fontSize = 18.sp,
+                color = MaterialTheme.colorScheme.onPrimary
             )
         }
     }

@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -203,7 +204,7 @@ fun FirstBlock(
                     modifier = Modifier
                         .size(50.dp)
                         .clip(CircleShape)
-                        .background(colorResource(R.color.dark_yellow))
+                        .background(MaterialTheme.colorScheme.primary)
                 ) {
                     Text(
                         text = String.format(Locale.US, "%.1f", movie.voteAverage),
@@ -222,7 +223,7 @@ fun FirstBlock(
                 ) {
                     Text(
                         text = movie.genres.joinToString(separator = ", ") { it.name },
-                        color = colorResource(R.color.dark_yellow),
+                        color = MaterialTheme.colorScheme.primary,
                         fontSize = 20.sp
                     )
                 }

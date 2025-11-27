@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -80,7 +81,7 @@ fun StartScreen(
             ) {
                 Text(
                     text = stringResource(R.string.settings),
-                    color = colorResource(R.color.dark_yellow),
+                    color = MaterialTheme.colorScheme.primary,
                     fontSize = 15.sp
                 )
             }

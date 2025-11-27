@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -158,7 +159,7 @@ fun RatingStars(rating: Double) {
             Icon(
                 imageVector = Icons.Default.Star,
                 contentDescription = null,
-                tint = if (index < rating) colorResource(R.color.dark_yellow) else Color.Gray,
+                tint = if (index < rating) MaterialTheme.colorScheme.primary else Color.Gray,
                 modifier = Modifier.size(21.dp)
             )
         }
