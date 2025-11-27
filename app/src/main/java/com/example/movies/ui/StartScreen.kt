@@ -19,7 +19,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,7 +35,9 @@ fun StartScreen(
     Box(modifier = modifier.fillMaxSize()) {
         // Background
         Image(
-            painter = painterResource(R.drawable.main),
+            painter = painterResource(imageSelector(
+                R.drawable.main,
+                R.drawable.main_dark)),
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = modifier.fillMaxSize()
