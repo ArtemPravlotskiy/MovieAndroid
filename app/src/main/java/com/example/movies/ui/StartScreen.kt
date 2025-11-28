@@ -30,14 +30,18 @@ import com.example.movies.ui.theme.MoviesTheme
 @Composable
 fun StartScreen(
     onStartButtonClicked: () -> Unit,
+    onSettingsButtonClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier.fillMaxSize()) {
         // Background
         Image(
-            painter = painterResource(imageSelector(
-                R.drawable.main,
-                R.drawable.main_dark)),
+            painter = painterResource(
+                imageSelector(
+                    R.drawable.main,
+                    R.drawable.main_dark
+                )
+            ),
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = modifier.fillMaxSize()
@@ -69,7 +73,7 @@ fun StartScreen(
 
             // Settings button
             Button(
-                onClick = {}, // TODO click activity
+                onClick = { onSettingsButtonClicked() },
                 shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Black,
@@ -95,6 +99,6 @@ fun StartScreen(
 @Composable
 fun StartScreenPreview() {
     MoviesTheme {
-        StartScreen({})
+        StartScreen({}, {})
     }
 }

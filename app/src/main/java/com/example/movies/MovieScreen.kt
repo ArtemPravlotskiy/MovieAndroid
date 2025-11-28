@@ -32,6 +32,7 @@ import androidx.navigation.navArgument
 import com.example.movies.ui.GenreScreen
 import com.example.movies.ui.MovieDetailsScreen
 import com.example.movies.ui.MoviesScreen
+import com.example.movies.ui.SettingsScreen
 import com.example.movies.ui.StartScreen
 import com.example.movies.viewModel.GenresViewModel
 import com.example.movies.viewModel.MovieDetailsViewModel
@@ -42,7 +43,8 @@ enum class MovieScreen(@StringRes val title: Int) {
     Start(title = R.string.app_name),
     Genres(title = R.string.select_genre),
     Movies(title = R.string.movie_list),
-    MovieInfo(title = R.string.movie_info)
+    MovieInfo(title = R.string.movie_info),
+    MovieSettings(title = R.string.settings)
 }
 
 // Draw TopAppBar
@@ -115,6 +117,9 @@ fun MovieApp(
                 StartScreen(
                     onStartButtonClicked = {
                         navController.navigate(MovieScreen.Genres.name)
+                    },
+                    onSettingsButtonClicked = {
+                        navController.navigate(MovieScreen.MovieSettings.name)
                     }
                 )
             }
@@ -177,6 +182,11 @@ fun MovieApp(
                     movieDetailsUiState = uiState,
                     retryAction = { movieDetailsViewModel.getMovieDetails(movieId) },
                 )
+            }
+
+            // Settings Screen
+            composable (route = MovieScreen.MovieSettings.name) {
+                SettingsScreen()
             }
 
         }

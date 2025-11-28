@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -77,6 +78,7 @@ fun GenresGridScreen(
             ),
             horizontalArrangement = Arrangement.spacedBy(28.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
+            modifier = Modifier.padding(top = 5.dp)
         ) {
             items(genres) { genre ->
                 GenreBox(genre, showMovieList = showMovieList)

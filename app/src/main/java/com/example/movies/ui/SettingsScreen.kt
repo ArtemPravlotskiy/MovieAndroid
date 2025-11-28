@@ -41,14 +41,19 @@ fun SettingsScreen(
         modifier = modifier.fillMaxSize()
     ) {
         Image(
-            painter = painterResource(R.drawable.movies),
+            painter = painterResource(
+                imageSelector(
+                    R.drawable.movies,
+                    R.drawable.movies_dark
+                )
+            ),
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
         )
 
         LazyColumn(
-            modifier = Modifier
+            modifier = Modifier.padding(top = 5.dp)
         ) {
             item { LanguageOption("en") {} }
             item { TextScaleOption(TextScale.BIG) {} }
@@ -155,7 +160,7 @@ fun SettingCard(
         modifier = Modifier
             .padding(start = 28.dp, end = 28.dp, bottom = 12.dp)
             .fillMaxWidth(),
-        colors = CardDefaults.cardColors(Color.White)
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primary)
     ) {
         Column(
             modifier = Modifier
