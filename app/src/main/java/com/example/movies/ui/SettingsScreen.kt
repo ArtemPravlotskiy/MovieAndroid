@@ -1,7 +1,10 @@
 package com.example.movies.ui
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -26,6 +30,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.movies.R
+import com.example.movies.data.TextScale
 import com.example.movies.data.supportedLanguages
 
 @Composable
@@ -45,8 +50,8 @@ fun SettingsScreen(
         LazyColumn(
             modifier = Modifier
         ) {
-//            LanguageOption()
-//            TextScaleOption()
+            item { LanguageOption("en") {} }
+            item { TextScaleOption(TextScale.BIG) {} }
         }
     }
 }
@@ -97,12 +102,49 @@ fun LanguageOption(
 }
 
 @Composable
-fun TextScaleOption() {
+fun TextScaleOption(
+    selectedScale: TextScale,
+    onSelectScale: (TextScale) -> Unit
+) {
     SettingCard(title = stringResource(R.string.setting_text_scale)) {
 //        TODO: text scale setting
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 32.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            TextScale.values().forEach { scale ->
+                val isSelected = scale == selectedScale
+
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(horizontal = 4.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(
+                            if (isSelected) MaterialTheme.colorScheme.primary
+                            else Color.Transparent
+                        )
+                        .border(
+                            width = 1.dp,
+                            color = MaterialTheme.colorScheme.primary,
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                        .clickable { onSelectScale }
+                        .padding(vertical = 12.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = stringResource(scale.labelResId),
+                        color = if (isSelected) Color.White else MaterialTheme.colorScheme.primary
+                    )
+                }
+
+            }
+        }
     }
 }
-
 
 @Composable
 fun SettingCard(
@@ -144,8 +186,14 @@ fun SettingCard(
 
 @Preview
 @Composable
-fun SettingCardPreview() {
-    LanguageOption("ru") { }
+fun LanguageOptionPreview() {
+    LanguageOption("en") { }
+}
+
+@Preview
+@Composable
+fun TextScaleOptionPreview() {
+    TextScaleOption(TextScale.BIG) {}
 }
 
 @Preview(showSystemUi = true)

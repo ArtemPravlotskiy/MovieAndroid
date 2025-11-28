@@ -12,4 +12,7 @@
     <string name="no_description">Нет описания</string>
     <string name="setting_language">ЯЗЫК</string>
     <string name="setting_text_scale">РАЗМЕР ТЕКСТА</string>
+    <string name="text_scale_small">МАЛЕНЬКИЙ</string>
+    <string name="text_scale_medium">СРЕДНИЙ</string>
+    <string name="text_scale_big">БОЛЬШОЙ</string>
 </resources>

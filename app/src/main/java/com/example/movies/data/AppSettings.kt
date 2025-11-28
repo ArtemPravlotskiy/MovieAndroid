@@ -1,5 +1,7 @@
 package com.example.movies.data
 
+import com.example.movies.R
+
 data class AppLanguages(
     val languageCode: String,
     val language: String
@@ -12,3 +14,9 @@ val supportedLanguages = listOf(
     AppLanguages("en", "English"),
     AppLanguages("de", "Deutsch")
 )
+
+enum class TextScale(val labelResId: Int, val scale: Float) {
+    SMALL(R.string.text_scale_small, 0.85f),
+    MEDIUM(R.string.text_scale_medium, 1.0f),
+    BIG(R.string.text_scale_big, 1.15f)
+}
