@@ -142,20 +142,20 @@ fun MovieApp(
                 route = "${MovieScreen.Movies.name}/{genreId}",
                 arguments = listOf(navArgument("genreId") { type = NavType.StringType })
             ) {
-                val genreId = backStackEntry?.arguments?.getString("genreId") ?: ""
+                //val genreId = backStackEntry?.arguments?.getString("genreId") ?: ""
                 val moviesViewModel: MoviesViewModel = viewModel(factory = MoviesViewModel.Factory)
                 val uiState by moviesViewModel.moviesUiState.collectAsState()
 
-                LaunchedEffect(genreId) {
-                    if (genreId.isNotEmpty()) {
-                        moviesViewModel.loadMovies(genreId)
-                    }
-                }
+//                LaunchedEffect(genreId) {
+//                    if (genreId.isNotEmpty()) {
+//                        moviesViewModel.loadMovies(genreId)
+//                    }
+//                }
 
                 MoviesScreen(
                     moviesUiState = uiState,
-                    retryAction = { moviesViewModel.loadMovies(genreId) },
-                    onLoadMore = { moviesViewModel.loadMovies(genreId) },
+                    retryAction = { moviesViewModel.loadMovies() },
+                    onLoadMore = { moviesViewModel.loadMovies() },
                     onShowMovieDetails = { selectedMovie ->
                         navController.navigate("${MovieScreen.MovieInfo.name}/${selectedMovie}")
                     }

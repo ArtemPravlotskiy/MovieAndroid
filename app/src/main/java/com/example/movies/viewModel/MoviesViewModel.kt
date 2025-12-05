@@ -1,8 +1,10 @@
 package com.example.movies.viewModel
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
+import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
@@ -22,7 +24,8 @@ sealed interface MoviesUiState {
 }
 
 class MoviesViewModel(
-    private val moviesRepository: MoviesRepository
+    private val moviesRepository: MoviesRepository,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private val _moviesUiState = MutableStateFlow<MoviesUiState>(MoviesUiState.Loading)
     val moviesUiState: StateFlow<MoviesUiState> = _moviesUiState
@@ -30,8 +33,13 @@ class MoviesViewModel(
     private var currentPage = 1
     private var currentGenreId: String = ""
     private var isLoadingMore = false
+    private val genreId: String = checkNotNull(savedStateHandle["genreId"])
 
-    fun loadMovies(genreId: String) {
+    init {
+        loadMovies()
+    }
+
+    fun loadMovies(/*genreId: String*/) {
         if (isLoadingMore) return
         isLoadingMore = true
 
@@ -71,7 +79,8 @@ class MoviesViewModel(
             initializer {
                 val application = (this[APPLICATION_KEY] as MoviesApplication)
                 val moviesRepository = application.container.moviesRepository
-                MoviesViewModel(moviesRepository = moviesRepository)
+                MoviesViewModel(moviesRepository = moviesRepository,
+                    this.createSavedStateHandle())
             }
         }
     }
