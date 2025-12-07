@@ -1,5 +1,6 @@
 package com.example.movies.data
 
+import android.content.Context
 import com.example.movies.network.MoviesApiService
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
@@ -15,7 +16,7 @@ interface AppContainer {
     val movieDetailsRepository: MovieDetailsRepository
 }
 
-class DefaultAppContainer : AppContainer {
+class DefaultAppContainer(private val context: Context) : AppContainer {
 //    private val baseUrl = "https://api.themoviedb.org/3/"
     private val baseUrl = "https://tmdb-proxy-production-4fbb.up.railway.app/"
 
@@ -37,7 +38,7 @@ class DefaultAppContainer : AppContainer {
     }
 
     override val genresRepository: GenresRepository by lazy {
-        NetworkGenresRepository(retrofitService, language)
+        NetworkGenresRepository(retrofitService, language, context = context)
     }
 
     override val moviesRepository: MoviesRepository by lazy {

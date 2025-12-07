@@ -1,5 +1,6 @@
 package com.example.movies.viewModel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
@@ -8,7 +9,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.movies.MoviesApplication
 import com.example.movies.data.GenresRepository
-import com.example.movies.model.Genre
+import com.example.movies.model.GenreDTO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -16,7 +17,7 @@ import okio.IOException
 import retrofit2.HttpException
 
 sealed interface GenresUiState {
-    data class Success(val genres: List<Genre>) : GenresUiState
+    data class Success(val genres: List<GenreDTO>) : GenresUiState
     object Error : GenresUiState
     object Loading : GenresUiState
 }
@@ -38,9 +39,14 @@ class GenresViewModel(
                 GenresUiState.Success(genresRepository.getGenres())
 
                 //TODO: Make right genre list with img path
-            } catch (_: IOException) {
+            } catch (e: IOException) {
+                Log.e("GenresViewModel", "Network error while loading genres", e)
                 GenresUiState.Error
-            } catch (_: HttpException) {
+            } catch (e: HttpException) {
+                Log.e("GenresViewModel", "HTTP error while loading genres: ${e.code()}", e)
+                GenresUiState.Error
+            } catch (e: Exception) {
+                Log.e("GenresViewModel", "Unexpected error", e)
                 GenresUiState.Error
             }
         }

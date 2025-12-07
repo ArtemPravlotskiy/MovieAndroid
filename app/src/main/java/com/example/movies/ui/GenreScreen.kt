@@ -32,7 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.movies.R
-import com.example.movies.model.Genre
+import com.example.movies.model.GenreDTO
 import com.example.movies.ui.theme.MoviesTheme
 import com.example.movies.viewModel.GenresUiState
 
@@ -57,7 +57,7 @@ fun GenreScreen(
 
 @Composable
 fun GenresGridScreen(
-    genres: List<Genre>,
+    genres: List<GenreDTO>,
     showMovieList: (Int) -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
@@ -89,12 +89,10 @@ fun GenresGridScreen(
 
 @Composable
 fun GenreBox(
-    genre: Genre,
+    genre: GenreDTO,
     showMovieList: (Int) -> Unit
 ) {
-    val resourceName = genre.englishName
-        .lowercase()
-        .replace(" ", "")
+    val resourceName = genre.imageName
 
     val context = LocalContext.current
     val imageResId = remember(resourceName) {
@@ -143,5 +141,5 @@ fun GenreScreenPreview() {
 @Preview
 @Composable
 fun GenreBoxPreview() {
-    GenreBox(Genre(28, "Action")) {}
+    GenreBox(GenreDTO(28, "Action", imageName = "")) {}
 }
