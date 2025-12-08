@@ -37,6 +37,7 @@ import com.example.movies.ui.StartScreen
 import com.example.movies.viewModel.GenresViewModel
 import com.example.movies.viewModel.MovieDetailsViewModel
 import com.example.movies.viewModel.MoviesViewModel
+import com.example.movies.viewModel.SettingsViewModel
 
 // Available screens in app
 enum class MovieScreen(@StringRes val title: Int) {
@@ -186,7 +187,10 @@ fun MovieApp(
 
             // Settings Screen
             composable (route = MovieScreen.MovieSettings.name) {
-                SettingsScreen()
+                val settingsViewModel: SettingsViewModel =
+                    viewModel(factory = SettingsViewModel.Factory)
+
+                SettingsScreen(viewModel = settingsViewModel)
             }
 
         }
