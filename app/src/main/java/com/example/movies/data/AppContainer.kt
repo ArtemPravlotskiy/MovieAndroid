@@ -8,7 +8,6 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
-import java.util.Locale
 
 interface AppContainer {
     val moviesRepository: MoviesRepository
@@ -22,7 +21,6 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
     private val baseUrl = "https://tmdb-proxy-production-4fbb.up.railway.app/"
 
     val json = Json { ignoreUnknownKeys = true }
-    private val language = Locale.getDefault().language
 
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
@@ -38,19 +36,19 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
         retrofit.create(MoviesApiService::class.java)
     }
 
+    override val settingsRepository: SettingsRepository by lazy {
+        SettingsRepository(context)
+    }
+
     override val genresRepository: GenresRepository by lazy {
-        NetworkGenresRepository(retrofitService, language, context = context)
+        NetworkGenresRepository(retrofitService, settingsRepository)
     }
 
     override val moviesRepository: MoviesRepository by lazy {
-        NetworkMoviesRepository(retrofitService, language)
+        NetworkMoviesRepository(retrofitService, settingsRepository)
     }
 
     override val movieDetailsRepository: MovieDetailsRepository by lazy {
-        NetworkMovieDetailsRepository(retrofitService, language)
-    }
-
-    override val settingsRepository: SettingsRepository by lazy {
-        SettingsRepository(context)
+        NetworkMovieDetailsRepository(retrofitService, settingsRepository)
     }
 }

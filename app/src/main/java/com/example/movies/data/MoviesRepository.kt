@@ -9,8 +9,12 @@ interface MoviesRepository {
 
 class NetworkMoviesRepository(
     private val movieApiService: MoviesApiService,
-    private val language: String
+    private val settingsRepository: SettingsRepository
 ) : MoviesRepository {
     override suspend fun getMovies(genreId: String, page: Int): List<Movie> =
-        movieApiService.getMovies(genreId = genreId, page = page, language = language).movies
+        movieApiService.getMovies(
+            genreId = genreId,
+            page = page,
+            language = settingsRepository.getSavedLanguage()
+        ).movies
 }
