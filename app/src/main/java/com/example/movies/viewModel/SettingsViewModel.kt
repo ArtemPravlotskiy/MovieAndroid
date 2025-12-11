@@ -1,6 +1,8 @@
 package com.example.movies.viewModel
 
 import android.app.Activity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
@@ -20,6 +22,9 @@ class SettingsViewModel(
     fun selectLanguage(code: String) {
         _selectedLanguage.value = code
         settingsRepository.saveLanguage(code)
+
+        val locales = LocaleListCompat.forLanguageTags(code)
+        AppCompatDelegate.setApplicationLocales(locales)
     }
 
     companion object {

@@ -21,6 +21,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -66,14 +67,14 @@ fun SettingsScreen(
         LazyColumn(
             modifier = Modifier.padding(top = 5.dp)
         ) {
-            item { LanguageOption(selectedLanguage) { code ->
-                viewModel.selectLanguage(code)
-                val activity = context as? Activity
-                activity?.apply {
-                    updateLocale(code)
-                    recreate()
+            item {
+                LanguageOption(selectedLanguage) { code ->
+                    viewModel.selectLanguage(code)
+
+                    val activity = context as? Activity
+                    activity?.recreate()
                 }
-            } }
+            }
             item { TextScaleOption(TextScale.BIG) {} }
         }
     }

@@ -2,6 +2,8 @@ package com.example.movies
 
 import android.app.Application
 import android.content.Context
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
 import com.example.movies.data.AppContainer
 import com.example.movies.data.DefaultAppContainer
 import com.example.movies.utils.updateLocale
@@ -14,12 +16,10 @@ class MoviesApplication : Application() {
         container = DefaultAppContainer(this)
 
         val lang = container.settingsRepository.getSavedLanguage()
-        updateLocale(lang)
-    }
+        if (lang.isNotEmpty()) {
+            val locales = LocaleListCompat.forLanguageTags(lang)
+            AppCompatDelegate.setApplicationLocales(locales)
 
-    override fun attachBaseContext(base: Context) {
-        val repo = SettingsRepository(base)
-        val lang = repo.getSavedLanguage()
-        super.attachBaseContext(base.updateLocale(lang))
+        }
     }
 }
