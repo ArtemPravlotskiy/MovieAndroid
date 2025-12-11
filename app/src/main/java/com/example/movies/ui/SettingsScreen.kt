@@ -21,7 +21,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -37,7 +36,6 @@ import androidx.compose.ui.unit.dp
 import com.example.movies.R
 import com.example.movies.data.TextScale
 import com.example.movies.data.supportedLanguages
-import com.example.movies.utils.updateLocale
 import com.example.movies.viewModel.SettingsViewModel
 
 @Composable
@@ -46,8 +44,8 @@ fun SettingsScreen(
     viewModel: SettingsViewModel
 ) {
     val selectedLanguage by viewModel.selectedLanguage.collectAsState()
+    val selectedScale by viewModel.selectedScale.collectAsState()
     val context = LocalContext.current
-    //val selectedScale
 
     Box(
         modifier = modifier.fillMaxSize()
@@ -75,7 +73,14 @@ fun SettingsScreen(
                     activity?.recreate()
                 }
             }
-            item { TextScaleOption(TextScale.BIG) {} }
+            item {
+                TextScaleOption(selectedScale) { scale ->
+                    viewModel.selectTextScale(scale)
+
+                    val activity = context as? Activity
+                    activity?.recreate()
+                }
+            }
         }
     }
 }
@@ -155,7 +160,7 @@ fun TextScaleOption(
                             color = MaterialTheme.colorScheme.primary,
                             shape = RoundedCornerShape(12.dp)
                         )
-                        .clickable { onSelectScale }
+                        .clickable { onSelectScale(scale) }
                         .padding(vertical = 12.dp),
                     contentAlignment = Alignment.Center
                 ) {

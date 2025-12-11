@@ -15,4 +15,15 @@ class SettingsRepository(
         val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
         return prefs.getString("language", "") ?: ""
     }
+
+    fun saveTextScale(scale: TextScale) {
+        val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
+        prefs.edit { putString("textScale", scale.name) }
+    }
+
+    fun getSavedTextScale(): TextScale {
+        val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
+        val name = prefs.getString("textScale", TextScale.MEDIUM.name) ?: TextScale.MEDIUM.name
+        return TextScale.valueOf(name)
+    }
 }

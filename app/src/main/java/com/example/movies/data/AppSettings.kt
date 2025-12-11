@@ -15,8 +15,8 @@ val supportedLanguages = listOf(
     AppLanguages("de", "Deutsch")
 )
 
-enum class TextScale(val labelResId: Int, val scale: Float) {
+enum class TextScale(val labelResId: Int, val scaleFactor: Float) {
     SMALL(R.string.text_scale_small, 0.85f),
     MEDIUM(R.string.text_scale_medium, 1.0f),
-    BIG(R.string.text_scale_big, 1.15f)
+    BIG(R.string.text_scale_big, 1.15f);
 }
