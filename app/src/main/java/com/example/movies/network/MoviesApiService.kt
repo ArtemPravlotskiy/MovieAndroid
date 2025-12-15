@@ -27,4 +27,11 @@ interface MoviesApiService {
         @Query("endpoint") endpoint: String,
         @Query("language") language: String = "en"
     ): MovieDetails
+
+    @GET("proxy")
+    suspend fun searchMovies(
+        @Query("endpoint") endpoint: String = "search/movie",
+        @Query("query") query: String,
+        @Query("language") language: String = "en"
+    ): MoviesResponse
 }
