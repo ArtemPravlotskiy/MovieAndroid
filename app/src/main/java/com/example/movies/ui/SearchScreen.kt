@@ -3,8 +3,10 @@ package com.example.movies.ui
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -50,7 +52,9 @@ fun SearchScreen(
             contentScale = ContentScale.Crop,
         )
 
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
             TextField(
                 value = query,
                 onValueChange = {
@@ -58,8 +62,10 @@ fun SearchScreen(
                     viewModel.searchMovies(it)
                 },
                 label = { Text("Search") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth().padding(16.dp)
             )
+
+            Spacer(modifier = Modifier.height(5.dp))
 
             LazyColumn {
                 items(searchResult) { movie ->

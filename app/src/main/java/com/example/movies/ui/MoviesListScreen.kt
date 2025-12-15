@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -37,6 +38,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -151,30 +153,39 @@ fun MovieCard(
 
             Spacer(modifier = Modifier.width(8.dp))
 
-            Column {
-                Text(text = movie.title)
+            Column(
+                modifier = Modifier.fillMaxHeight(),
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column {
+                    Text(
+                        text = movie.title,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = movie.overview,
+                        maxLines = 3,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
 
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Text(
-                    text = movie.overview,
-                    maxLines = 3
-                )
-
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.BottomStart
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     RatingStars(movie.voteAverage)
-                }
-            }
 
-            IconButton(onClick = { settingsViewModel.toggleFavorite(movie.id) }) {
-                Icon(
-                    imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                    contentDescription = "Favorite",
-                    tint = if (isFavorite) MaterialTheme.colorScheme.primary else Color.Gray
-                )
+                    IconButton(onClick = { settingsViewModel.toggleFavorite(movie.id) }) {
+                        Icon(
+                            imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                            contentDescription = "Favorite",
+                            tint = if (isFavorite) MaterialTheme.colorScheme.primary else Color.Gray
+                        )
+                    }
+                }
             }
         }
     }
