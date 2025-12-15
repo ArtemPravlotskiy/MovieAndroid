@@ -23,11 +23,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.movies.R
 import com.example.movies.viewModel.SearchViewModel
+import com.example.movies.viewModel.SettingsViewModel
 
 @Composable
 fun SearchScreen(
     viewModel: SearchViewModel = viewModel(factory = SearchViewModel.Factory),
-    onShowMovieDetails: (Int) -> Unit
+    onShowMovieDetails: (Int) -> Unit,
+    settingsViewModel: SettingsViewModel
 ) {
     val searchResult by viewModel.searchResult.collectAsState()
     var query by remember { mutableStateOf("") }
@@ -61,7 +63,7 @@ fun SearchScreen(
 
             LazyColumn {
                 items(searchResult) { movie ->
-                    MovieCard(movie = movie, onClick = onShowMovieDetails)
+                    MovieCard(movie = movie, onClick = onShowMovieDetails, settingsViewModel = settingsViewModel)
                 }
             }
         }

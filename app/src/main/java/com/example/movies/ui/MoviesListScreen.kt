@@ -19,13 +19,18 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,21 +45,24 @@ import com.example.movies.R
 import com.example.movies.data.mockMoviesResponse
 import com.example.movies.model.Movie
 import com.example.movies.viewModel.MoviesUiState
+import com.example.movies.viewModel.SettingsViewModel
 
 @Composable
 fun MoviesScreen(
     moviesUiState: MoviesUiState,
     retryAction: () -> Unit,
     onLoadMore: () -> Unit,
-    onShowMovieDetails: (Int) -> Unit
+    onShowMovieDetails: (Int) -> Unit,
+    settingsViewModel: SettingsViewModel
 ) {
     when (moviesUiState) {
         is MoviesUiState.Loading -> LoadingScreen()
         is MoviesUiState.Error -> ErrorScreen(retryAction)
         is MoviesUiState.Success -> MoviesListScreen(
-            moviesUiState.movies,
+            movies = moviesUiState.movies,
             onLoadMore = onLoadMore,
-            onShowMovieDetails = onShowMovieDetails
+            onShowMovieDetails = onShowMovieDetails,
+            settingsViewModel = settingsViewModel
         )
     }
 }
@@ -64,12 +72,12 @@ fun MoviesListScreen(
     movies: List<Movie>,
     onLoadMore: () -> Unit,
     onShowMovieDetails: (Int) -> Unit,
+    settingsViewModel: SettingsViewModel,
     modifier: Modifier = Modifier
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        // background
         Image(
             painter = painterResource(
                 imageSelector(
@@ -82,10 +90,13 @@ fun MoviesListScreen(
             contentScale = ContentScale.Crop,
         )
 
-        // movie list
         LazyColumn(modifier = modifier) {
             itemsIndexed(movies) { index, movie ->
-                MovieCard(movie = movie, onClick = onShowMovieDetails)
+                MovieCard(
+                    movie = movie,
+                    onClick = onShowMovieDetails,
+                    settingsViewModel = settingsViewModel
+                )
 
                 if (index == movies.lastIndex) {
                     onLoadMore()
@@ -99,10 +110,13 @@ fun MoviesListScreen(
 fun MovieCard(
     movie: Movie,
     onClick: (Int) -> Unit,
+    settingsViewModel: SettingsViewModel,
     modifier: Modifier = Modifier
 ) {
-    val posterUrl =
-        "https://tmdb-proxy-production-4fbb.up.railway.app/image?path=${movie.posterPath}"
+    val posterUrl = "https://tmdb-proxy-production-4fbb.up.railway.app/image?path=${movie.posterPath}"
+    val favoriteIds by settingsViewModel.favoriteIds.collectAsState()
+    val isFavorite = favoriteIds.contains(movie.id.toString())
+
     Card(
         modifier = modifier
             .padding(start = 28.dp, end = 28.dp, bottom = 12.dp)
@@ -116,7 +130,6 @@ fun MovieCard(
         )
     ) {
         Row(modifier = modifier.padding(8.dp)) {
-            // Poster
             Card(
                 shape = RoundedCornerShape(12.dp),
                 elevation = CardDefaults.cardElevation(30.dp),
@@ -139,9 +152,7 @@ fun MovieCard(
             Spacer(modifier = Modifier.width(8.dp))
 
             Column {
-                Text(
-                    text = movie.title
-                )
+                Text(text = movie.title)
 
                 Spacer(modifier = Modifier.height(8.dp))
 
@@ -156,6 +167,14 @@ fun MovieCard(
                 ) {
                     RatingStars(movie.voteAverage)
                 }
+            }
+
+            IconButton(onClick = { settingsViewModel.toggleFavorite(movie.id) }) {
+                Icon(
+                    imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                    contentDescription = "Favorite",
+                    tint = if (isFavorite) MaterialTheme.colorScheme.primary else Color.Gray
+                )
             }
         }
     }
@@ -178,5 +197,5 @@ fun RatingStars(rating: Double) {
 @Preview
 @Composable
 fun MovieCardPreview() {
-    MovieCard(mockMoviesResponse.movies[0], {})
+    // MovieCard(mockMoviesResponse.movies[0], {}, viewModel())
 }

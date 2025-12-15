@@ -1,11 +1,13 @@
 package com.example.movies.data
 
 import com.example.movies.model.Movie
+import com.example.movies.model.MovieDetails
 import com.example.movies.network.MoviesApiService
 
 interface MoviesRepository {
     suspend fun getMovies(genreId: String, page: Int): List<Movie>
     suspend fun searchMovies(query: String): List<Movie>
+    suspend fun getMovieDetails(movieId: Int): MovieDetails
 }
 
 class NetworkMoviesRepository(
@@ -24,4 +26,10 @@ class NetworkMoviesRepository(
             query = query,
             language = settingsRepository.getSavedLanguage()
         ).movies
+
+    override suspend fun getMovieDetails(movieId: Int): MovieDetails =
+        movieApiService.getMovieDetails(
+            endpoint = "movie/$movieId",
+            language = settingsRepository.getSavedLanguage()
+        )
 }

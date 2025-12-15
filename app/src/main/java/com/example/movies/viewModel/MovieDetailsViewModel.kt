@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.movies.MoviesApplication
-import com.example.movies.data.MovieDetailsRepository
+import com.example.movies.data.MoviesRepository
 import com.example.movies.model.MovieDetails
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,7 +22,7 @@ sealed interface MovieDetailsUiState {
 }
 
 class MovieDetailsViewModel(
-    private val movieDetailsRepository: MovieDetailsRepository
+    private val moviesRepository: MoviesRepository
 ) : ViewModel() {
     private val _movieDetailsUiState =
         MutableStateFlow<MovieDetailsUiState>(MovieDetailsUiState.Loading)
@@ -33,8 +33,7 @@ class MovieDetailsViewModel(
             _movieDetailsUiState.value = MovieDetailsUiState.Loading
             _movieDetailsUiState.value = try {
                 MovieDetailsUiState.Success(
-                    movieDetailsRepository
-                        .getMovieDetails(movieId = movieId)
+                    moviesRepository.getMovieDetails(movieId = movieId.toInt())
                 )
             } catch (e: IOException) {
                 MovieDetailsUiState.Error
@@ -48,8 +47,8 @@ class MovieDetailsViewModel(
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val application = (this[APPLICATION_KEY] as MoviesApplication)
-                val movieDetailsRepository = application.container.movieDetailsRepository
-                MovieDetailsViewModel(movieDetailsRepository = movieDetailsRepository)
+                val moviesRepository = application.container.moviesRepository
+                MovieDetailsViewModel(moviesRepository = moviesRepository)
             }
         }
     }

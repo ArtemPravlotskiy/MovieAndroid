@@ -17,11 +17,18 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,18 +46,21 @@ import coil.request.ImageRequest
 import com.example.movies.R
 import com.example.movies.model.MovieDetails
 import com.example.movies.viewModel.MovieDetailsUiState
+import com.example.movies.viewModel.SettingsViewModel
 import java.util.Locale
 
 @Composable
 fun MovieDetailsScreen(
     movieDetailsUiState: MovieDetailsUiState,
-    retryAction: () -> Unit
+    retryAction: () -> Unit,
+    settingsViewModel: SettingsViewModel
 ) {
     when (movieDetailsUiState) {
         is MovieDetailsUiState.Loading -> LoadingScreen()
         is MovieDetailsUiState.Error -> ErrorScreen(retryAction = retryAction)
         is MovieDetailsUiState.Success -> MovieInfoScreen(
-            movie = movieDetailsUiState.movieDetails
+            movie = movieDetailsUiState.movieDetails,
+            settingsViewModel = settingsViewModel
         )
     }
 }
@@ -58,6 +68,7 @@ fun MovieDetailsScreen(
 @Composable
 fun MovieInfoScreen(
     movie: MovieDetails,
+    settingsViewModel: SettingsViewModel,
     modifier: Modifier = Modifier
 ) {
     Box {
@@ -76,7 +87,7 @@ fun MovieInfoScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(end = 28.dp, start = 28.dp, bottom = 14.dp, top = 14.dp)
         ) {
-            FirstBlock(movie = movie)
+            FirstBlock(movie = movie, settingsViewModel = settingsViewModel)
 
             Spacer(modifier = Modifier.height(5.dp))
 
@@ -87,8 +98,12 @@ fun MovieInfoScreen(
 
 @Composable
 fun FirstBlock(
-    movie: MovieDetails
+    movie: MovieDetails,
+    settingsViewModel: SettingsViewModel
 ) {
+    val favoriteIds by settingsViewModel.favoriteIds.collectAsState()
+    val isFavorite = favoriteIds.contains(movie.id.toString())
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -98,7 +113,6 @@ fun FirstBlock(
         Column(
             modifier = Modifier.padding(8.dp)
         ) {
-            // Title
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
@@ -112,7 +126,6 @@ fun FirstBlock(
                 )
             }
 
-            // Poster + 3 text block
             Box(
                 modifier = Modifier.fillMaxHeight()
             ) {
@@ -120,7 +133,6 @@ fun FirstBlock(
                     modifier = Modifier.height(270.dp)
                 ) {
 
-                    // Poster
                     Card(
                         shape = RoundedCornerShape(12.dp),
                         elevation = CardDefaults.cardElevation(12.dp),
@@ -141,14 +153,12 @@ fun FirstBlock(
                         )
                     }
 
-                    // 3 text blocks
                     Column(
                         verticalArrangement = Arrangement.Bottom,
                         modifier = Modifier
                             .padding(bottom = 10.dp)
                             .fillMaxHeight()
                     ) {
-                        // Block 1 - runtime
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(5.dp))
@@ -163,7 +173,6 @@ fun FirstBlock(
 
                         Spacer(modifier = Modifier.height(10.dp))
 
-                        // Block 2 - release date
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(5.dp))
@@ -176,7 +185,6 @@ fun FirstBlock(
                             )
                         }
 
-                        // Block 3 - tagline
                         if (movie.tagline.isNotBlank()) {
                             Spacer(modifier = Modifier.height(10.dp))
                             Box(
@@ -199,7 +207,6 @@ fun FirstBlock(
                 verticalAlignment = Alignment.Bottom,
                 modifier = Modifier.padding(10.dp)
             ) {
-                // Average vote
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier
@@ -215,7 +222,6 @@ fun FirstBlock(
                     )
                 }
 
-                // movie's genres
                 Box(
                     contentAlignment = Alignment.BottomStart,
                     modifier = Modifier
@@ -228,12 +234,19 @@ fun FirstBlock(
                         fontSize = 20.sp
                     )
                 }
+
+                IconButton(onClick = { settingsViewModel.toggleFavorite(movie.id) }) {
+                    Icon(
+                        imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                        contentDescription = "Favorite",
+                        tint = if (isFavorite) MaterialTheme.colorScheme.primary else Color.Gray
+                    )
+                }
             }
         }
     }
 }
 
-// Overview
 @Composable
 fun SecondBlock(
     movie: MovieDetails

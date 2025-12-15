@@ -26,6 +26,22 @@ class SettingsViewModel(
     private val _selectedTheme = MutableStateFlow(settingsRepository.getSavedTheme())
     val selectedTheme: StateFlow<Theme> = _selectedTheme
 
+    private val _favoriteIds = MutableStateFlow(settingsRepository.getFavoriteIds())
+    val favoriteIds: StateFlow<Set<String>> = _favoriteIds
+
+    fun toggleFavorite(id: Int) {
+        val currentFavorites = _favoriteIds.value.toMutableSet()
+        val idStr = id.toString()
+        if (currentFavorites.contains(idStr)) {
+            settingsRepository.removeFavorite(id)
+            currentFavorites.remove(idStr)
+        } else {
+            settingsRepository.addFavorite(id)
+            currentFavorites.add(idStr)
+        }
+        _favoriteIds.value = currentFavorites
+    }
+
     fun selectLanguage(code: String) {
         _selectedLanguage.value = code
         settingsRepository.saveLanguage(code)
