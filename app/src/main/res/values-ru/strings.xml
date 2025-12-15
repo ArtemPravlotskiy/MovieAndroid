@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Кино</string>
+    <string name="app_name">MoviesFlow</string>
     <string name="select_genre">Выберите жанр</string>
     <string name="movie_list">Фильмы</string>
     <string name="movie_info">Информация о фильме</string>
