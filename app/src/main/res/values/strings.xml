@@ -15,4 +15,5 @@
     <string name="text_scale_small">SMALL</string>
     <string name="text_scale_medium">MEDIUM</string>
     <string name="text_scale_big">BIG</string>
+    <string name="search">Search</string>
 </resources>

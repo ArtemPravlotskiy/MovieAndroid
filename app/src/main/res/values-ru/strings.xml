@@ -15,4 +15,5 @@
     <string name="text_scale_small">МАЛЕНЬКИЙ</string>
     <string name="text_scale_medium">СРЕДНИЙ</string>
     <string name="text_scale_big">БОЛЬШОЙ</string>
+    <string name="search">Поиск</string>
 </resources>

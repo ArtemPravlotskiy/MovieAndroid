@@ -5,6 +5,7 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -19,7 +20,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -32,6 +32,7 @@ import androidx.navigation.navArgument
 import com.example.movies.ui.GenreScreen
 import com.example.movies.ui.MovieDetailsScreen
 import com.example.movies.ui.MoviesScreen
+import com.example.movies.ui.SearchScreen
 import com.example.movies.ui.SettingsScreen
 import com.example.movies.ui.StartScreen
 import com.example.movies.viewModel.GenresViewModel
@@ -45,7 +46,8 @@ enum class MovieScreen(@StringRes val title: Int) {
     Genres(title = R.string.select_genre),
     Movies(title = R.string.movie_list),
     MovieInfo(title = R.string.movie_info),
-    MovieSettings(title = R.string.settings)
+    MovieSettings(title = R.string.settings),
+    Search(title = R.string.search)
 }
 
 // Draw TopAppBar
@@ -55,6 +57,7 @@ fun MovieAppBar(
     currentScreen: MovieScreen,
     canNavigateBack: Boolean,
     navigateUp: () -> Unit,
+    onSearchClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     if (currentScreen != MovieScreen.Start) {
@@ -66,6 +69,15 @@ fun MovieAppBar(
                 )
             },
             modifier = modifier,
+            actions = {
+                IconButton(onClick = onSearchClick) {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = stringResource(R.string.search),
+                        tint = Color.White
+                    )
+                }
+            },
             navigationIcon = {
                 if (canNavigateBack) {
                     IconButton(onClick = navigateUp) {
@@ -103,7 +115,8 @@ fun MovieApp(
             MovieAppBar(
                 currentScreen = currentScreen,
                 canNavigateBack = navController.previousBackStackEntry != null,
-                navigateUp = { navController.navigateUp() }
+                navigateUp = { navController.navigateUp() },
+                onSearchClick = { navController.navigate(MovieScreen.Search.name) }
             )
         }
     ) { innerPadding ->
@@ -191,6 +204,12 @@ fun MovieApp(
                     viewModel(factory = SettingsViewModel.Factory)
 
                 SettingsScreen(viewModel = settingsViewModel)
+            }
+
+            composable(route = MovieScreen.Search.name) {
+                SearchScreen(onShowMovieDetails = { selectedMovie ->
+                    navController.navigate("${MovieScreen.MovieInfo.name}/${selectedMovie}")
+                })
             }
 
         }

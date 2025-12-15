@@ -5,6 +5,7 @@ import com.example.movies.network.MoviesApiService
 
 interface MoviesRepository {
     suspend fun getMovies(genreId: String, page: Int): List<Movie>
+    suspend fun searchMovies(query: String): List<Movie>
 }
 
 class NetworkMoviesRepository(
@@ -15,6 +16,12 @@ class NetworkMoviesRepository(
         movieApiService.getMovies(
             genreId = genreId,
             page = page,
+            language = settingsRepository.getSavedLanguage()
+        ).movies
+
+    override suspend fun searchMovies(query: String): List<Movie> =
+        movieApiService.searchMovies(
+            query = query,
             language = settingsRepository.getSavedLanguage()
         ).movies
 }
