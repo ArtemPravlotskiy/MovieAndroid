@@ -10,6 +10,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.movies.MoviesApplication
 import com.example.movies.data.SettingsRepository
 import com.example.movies.data.TextScale
+import com.example.movies.data.Theme
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -21,6 +22,9 @@ class SettingsViewModel(
 
     private val _selectedScale = MutableStateFlow(settingsRepository.getSavedTextScale())
     val selectedScale: StateFlow<TextScale> = _selectedScale
+
+    private val _selectedTheme = MutableStateFlow(settingsRepository.getSavedTheme())
+    val selectedTheme: StateFlow<Theme> = _selectedTheme
 
     fun selectLanguage(code: String) {
         _selectedLanguage.value = code
@@ -39,6 +43,16 @@ class SettingsViewModel(
         config.fontScale = scale.scaleFactor
         @Suppress("DEPRECATION")
         context.resources.updateConfiguration(config, context.resources.displayMetrics)
+    }
+
+    fun selectTheme(theme: Theme) {
+        _selectedTheme.value = theme
+        settingsRepository.saveTheme(theme)
+
+        when (theme) {
+            Theme.LIGHT -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            Theme.DARK -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        }
     }
 
     companion object {

@@ -26,4 +26,15 @@ class SettingsRepository(
         val name = prefs.getString("textScale", TextScale.MEDIUM.name) ?: TextScale.MEDIUM.name
         return TextScale.valueOf(name)
     }
+
+    fun saveTheme(theme: Theme) {
+        val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
+        prefs.edit { putString("theme", theme.name) }
+    }
+
+    fun getSavedTheme(): Theme {
+        val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
+        val name = prefs.getString("theme", Theme.LIGHT.name) ?: Theme.LIGHT.name
+        return Theme.valueOf(name)
+    }
 }

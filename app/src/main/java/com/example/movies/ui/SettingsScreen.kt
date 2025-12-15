@@ -35,6 +35,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.movies.R
 import com.example.movies.data.TextScale
+import com.example.movies.data.Theme
 import com.example.movies.data.supportedLanguages
 import com.example.movies.viewModel.SettingsViewModel
 
@@ -45,6 +46,7 @@ fun SettingsScreen(
 ) {
     val selectedLanguage by viewModel.selectedLanguage.collectAsState()
     val selectedScale by viewModel.selectedScale.collectAsState()
+    val selectedTheme by viewModel.selectedTheme.collectAsState()
     val context = LocalContext.current
 
     Box(
@@ -79,6 +81,11 @@ fun SettingsScreen(
 
                     val activity = context as? Activity
                     activity?.recreate()
+                }
+            }
+            item {
+                ThemeOption(selectedTheme) { theme ->
+                    viewModel.selectTheme(theme)
                 }
             }
         }
@@ -176,6 +183,52 @@ fun TextScaleOption(
 }
 
 @Composable
+fun ThemeOption(
+    selectedTheme: Theme,
+    onSelectTheme: (Theme) -> Unit
+) {
+    SettingCard(title = "Theme") {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 32.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            Theme.values().forEach { theme ->
+                val isSelected = theme == selectedTheme
+
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(horizontal = 4.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(
+                            if (isSelected) MaterialTheme.colorScheme.primary
+                            else Color.Transparent
+                        )
+                        .border(
+                            width = 1.dp,
+                            color = MaterialTheme.colorScheme.primary,
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                        .clickable { onSelectTheme(theme) }
+                        .padding(vertical = 12.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = when (theme) {
+                            Theme.LIGHT -> "Light"
+                            Theme.DARK -> "Dark"
+                        },
+                        color = if (isSelected) Color.White else MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
 fun SettingCard(
     title: String = stringResource(R.string.setting_language),
     content: @Composable () -> Unit = {}
@@ -223,6 +276,12 @@ fun LanguageOptionPreview() {
 @Composable
 fun TextScaleOptionPreview() {
     TextScaleOption(TextScale.BIG) {}
+}
+
+@Preview
+@Composable
+fun ThemeOptionPreview() {
+    ThemeOption(Theme.LIGHT) {}
 }
 
 //@Preview(showSystemUi = true)
