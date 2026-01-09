@@ -16,9 +16,9 @@ val supportedLanguages = listOf(
 )
 
 enum class TextScale(val labelResId: Int, val scaleFactor: Float) {
-    SMALL(R.string.text_scale_small, 0.85f),
+    SMALL(R.string.text_scale_small, 0.7f),
     MEDIUM(R.string.text_scale_medium, 1.0f),
-    BIG(R.string.text_scale_big, 1.15f);
+    BIG(R.string.text_scale_big, 1.3f);
 }
 
 enum class Theme {
