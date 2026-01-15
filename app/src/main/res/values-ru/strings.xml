@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">MoviesFlow</string>
+    <string name="select_genre">Выберите жанр</string>
+    <string name="movie_list">Фильмы</string>
+    <string name="movie_info">Информация о фильме</string>
+    <string name="back">Назад</string>
+    <string name="start">Н А Ч А Т Ь</string>
+    <string name="settings">НАСТРОЙКИ</string>
+    <string name="loading">Загрузка</string>
+    <string name="failed_load">Ошибка загрузки</string>
+    <string name="retry">Повторить</string>
+    <string name="no_description">Нет описания</string>
+    <string name="setting_language">ЯЗЫК</string>
+    <string name="setting_text_scale">РАЗМЕР ТЕКСТА</string>
+    <string name="text_scale_small">МАЛЕНЬКИЙ</string>
+    <string name="text_scale_medium">СРЕДНИЙ</string>
+    <string name="text_scale_big">БОЛЬШОЙ</string>
+    <string name="search">Поиск</string>
+    <string name="favorites">Избранное</string>
+</resources>
