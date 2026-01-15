@@ -1,5 +1,6 @@
 package com.example.movies.ui
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -115,7 +116,8 @@ fun MovieCard(
     settingsViewModel: SettingsViewModel,
     modifier: Modifier = Modifier
 ) {
-    val posterUrl = "https://tmdb-proxy-production-4fbb.up.railway.app/image?path=${movie.posterPath}"
+    // TODO: кажется, что надо переместить юрл, но куда?
+    val posterUrl = "https://tmdb-proxy-tmdb-proxy2.up.railway.app/image?path=${movie.posterPath}"
     val favoriteIds by settingsViewModel.favoriteIds.collectAsState()
     val isFavorite = favoriteIds.contains(movie.id.toString())
 

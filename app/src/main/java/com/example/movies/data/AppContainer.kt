@@ -8,6 +8,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
+import java.util.concurrent.TimeUnit
 
 interface AppContainer {
     val moviesRepository: MoviesRepository
@@ -17,7 +18,7 @@ interface AppContainer {
 
 class DefaultAppContainer(private val context: Context) : AppContainer {
 //    private val baseUrl = "https://api.themoviedb.org/3/"
-    private val baseUrl = "https://tmdb-proxy-production-4fbb.up.railway.app/"
+    private val baseUrl = "https://tmdb-proxy-tmdb-proxy2.up.railway.app/"
 
     val json = Json { ignoreUnknownKeys = true }
 
@@ -25,7 +26,12 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
         level = HttpLoggingInterceptor.Level.BODY
     }
 
-    private val okHttpClient = OkHttpClient.Builder().addInterceptor(loggingInterceptor).build()
+    private val okHttpClient = OkHttpClient.Builder()
+        .addInterceptor(loggingInterceptor)
+        .connectTimeout(30, TimeUnit.SECONDS)
+        .readTimeout(30, TimeUnit.SECONDS)
+        .writeTimeout(30, TimeUnit.SECONDS)
+        .build()
 
     private val retrofit: Retrofit = Retrofit.Builder().client(okHttpClient)
         .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
