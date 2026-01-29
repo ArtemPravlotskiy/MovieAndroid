@@ -1,7 +1,9 @@
 package com.example.movies.data
 
 import android.content.Context
+import com.example.movies.network.ExternalIdApiService
 import com.example.movies.network.MoviesApiService
+import com.example.movies.network.PlayerApiService
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -19,6 +21,8 @@ interface AppContainer {
 class DefaultAppContainer(private val context: Context) : AppContainer {
 //    private val baseUrl = "https://api.themoviedb.org/3/"
     private val baseUrl = "https://tmdb-proxy-tmdb-proxy2.up.railway.app/"
+    private val kinopoiskUrl = "https://api.poiskkino.dev/"
+    private val playerUrl = "https://api4.rhserv.vu/"
 
     val json = Json { ignoreUnknownKeys = true }
 
@@ -37,8 +41,24 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
         .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
         .baseUrl(baseUrl).build()
 
+    private val retrofitKinopoisk: Retrofit = Retrofit.Builder().client(okHttpClient)
+        .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
+        .baseUrl(kinopoiskUrl).build()
+
+    private val retrofitVideo: Retrofit = Retrofit.Builder().client(okHttpClient)
+        .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
+        .baseUrl(playerUrl).build()
+
     private val retrofitService: MoviesApiService by lazy {
         retrofit.create(MoviesApiService::class.java)
+    }
+
+    private val externalIdApiService: ExternalIdApiService by lazy {
+        retrofitKinopoisk.create(ExternalIdApiService::class.java)
+    }
+
+    private val playerApiService: PlayerApiService by lazy {
+        retrofitVideo.create(PlayerApiService::class.java)
     }
 
     override val settingsRepository: SettingsRepository by lazy {
@@ -50,6 +70,11 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
     }
 
     override val moviesRepository: MoviesRepository by lazy {
-        NetworkMoviesRepository(retrofitService, settingsRepository)
+        NetworkMoviesRepository(
+            movieApiService = retrofitService,
+            externalIdApiService = externalIdApiService,
+            playerApiService = playerApiService,
+            settingsRepository = settingsRepository
+        )
     }
 }

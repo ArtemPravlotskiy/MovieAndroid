@@ -1,5 +1,8 @@
 package com.example.movies.ui
 
+import android.webkit.WebChromeClient
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -41,11 +44,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.movies.R
 import com.example.movies.model.MovieDetails
 import com.example.movies.viewModel.MovieDetailsUiState
+import com.example.movies.viewModel.MovieDetailsViewModel
 import com.example.movies.viewModel.SettingsViewModel
 import java.util.Locale
 
@@ -73,9 +79,12 @@ fun MovieInfoScreen(
 ) {
     Box {
         Image(
-            painter = painterResource(imageSelector(
-                R.drawable.movies,
-                R.drawable.movies_dark)),
+            painter = painterResource(
+                imageSelector(
+                    R.drawable.movies,
+                    R.drawable.movies_dark
+                )
+            ),
             contentDescription = null,
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
@@ -91,7 +100,9 @@ fun MovieInfoScreen(
 
             Spacer(modifier = Modifier.height(5.dp))
 
-            SecondBlock(movie = movie)
+            SecondBlock(
+                movie = movie
+            )
         }
     }
 }
@@ -251,18 +262,67 @@ fun FirstBlock(
 fun SecondBlock(
     movie: MovieDetails
 ) {
+    val movieDetailsViewModel: MovieDetailsViewModel =
+        viewModel(factory = MovieDetailsViewModel.Factory)
+
+    val url by movieDetailsViewModel.playerUrl.collectAsState()
+
+    androidx.compose.runtime.LaunchedEffect(movie.imdbId) {
+        movieDetailsViewModel.loadPlayer(movie.imdbId)
+    }
+
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(10.dp))
             .background(Color.Black)
             .fillMaxWidth()
     ) {
-        Text(
-            text = movie.overview.ifBlank { stringResource(R.string.no_description) },
-            color = Color.White,
-            modifier = Modifier.padding(10.dp)
-        )
+        Column(
+            modifier = Modifier
+                .padding(8.dp)
+                .fillMaxWidth()
+        ) {
+            Text(
+                text = movie.overview.ifBlank { stringResource(R.string.no_description) },
+                color = Color.White,
+                modifier = Modifier.padding(10.dp)
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            if (url != null) {
+                MoviePlayer(url = url!!)
+            } else {
+                androidx.compose.material3.CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
+            }
+        }
     }
+}
+
+@Composable
+fun MoviePlayer(url: String) {
+    AndroidView(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(250.dp)
+            .clip(RoundedCornerShape(10.dp)),
+        factory = { context ->
+            WebView(context).apply {
+                settings.javaScriptEnabled = true
+                settings.domStorageEnabled = true
+                settings.mediaPlaybackRequiresUserGesture = false
+                settings.useWideViewPort = true
+                settings.loadWithOverviewMode = true
+
+                webChromeClient = WebChromeClient()
+                webViewClient = WebViewClient()
+
+                loadUrl(url)
+            }
+        }
+    )
 }
 
 @Preview(showSystemUi = true)

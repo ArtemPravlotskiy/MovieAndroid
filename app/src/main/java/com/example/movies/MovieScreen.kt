@@ -36,7 +36,6 @@ import com.example.movies.ui.MoviesScreen
 import com.example.movies.ui.SearchScreen
 import com.example.movies.ui.SettingsScreen
 import com.example.movies.ui.StartScreen
-import com.example.movies.viewModel.FavoritesViewModel
 import com.example.movies.viewModel.GenresViewModel
 import com.example.movies.viewModel.MovieDetailsViewModel
 import com.example.movies.viewModel.MoviesViewModel
@@ -109,7 +108,8 @@ fun MovieApp(
     val backStackEntry by navController.currentBackStackEntryAsState()
     val route = backStackEntry?.destination?.route ?: MovieScreen.Start.name
     val baseRoute = route.substringBefore("/")
-    val currentScreen = MovieScreen.values().firstOrNull { it.name == baseRoute } ?: MovieScreen.Start
+    val currentScreen =
+        MovieScreen.values().firstOrNull { it.name == baseRoute } ?: MovieScreen.Start
     val settingsViewModel: SettingsViewModel = viewModel(factory = SettingsViewModel.Factory)
 
     Scaffold(
@@ -159,15 +159,22 @@ fun MovieApp(
                 route = "${MovieScreen.MovieInfo.name}/{movieId}",
                 arguments = listOf(navArgument("movieId") { type = NavType.StringType })
             ) {
-                val movieDetailsViewModel: MovieDetailsViewModel = viewModel(factory = MovieDetailsViewModel.Factory)
+                val movieDetailsViewModel: MovieDetailsViewModel =
+                    viewModel(factory = MovieDetailsViewModel.Factory)
                 val uiState by movieDetailsViewModel.movieDetailsUiState.collectAsState()
                 val movieId = backStackEntry?.arguments?.getString("movieId") ?: ""
                 LaunchedEffect(movieId) {
-                    if (movieId.isNotEmpty()) movieDetailsViewModel.getMovieDetails(movieId)
+                    if (movieId.isNotEmpty()) {
+                        movieDetailsViewModel.getMovieDetails(movieId)
+                        movieDetailsViewModel.loadPlayer(movieId)
+                    }
                 }
                 MovieDetailsScreen(
                     movieDetailsUiState = uiState,
-                    retryAction = { movieDetailsViewModel.getMovieDetails(movieId) },
+                    retryAction = {
+                        movieDetailsViewModel.getMovieDetails(movieId)
+                        movieDetailsViewModel.loadPlayer(movieId)
+                    },
                     settingsViewModel = settingsViewModel
                 )
             }

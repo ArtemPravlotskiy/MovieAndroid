@@ -43,6 +43,22 @@ class MovieDetailsViewModel(
         }
     }
 
+    private val _playerUrl = MutableStateFlow<String?>(null)
+    val playerUrl: StateFlow<String?> = _playerUrl
+
+    fun loadPlayer(imdbId: String) {
+        viewModelScope.launch {
+            try {
+                val url = moviesRepository.getMoviePlayerUrl(imdbId = imdbId)
+                _playerUrl.value = url
+            } catch (e: IOException) {
+                MovieDetailsUiState.Error
+            } catch (e: HttpException) {
+                MovieDetailsUiState.Error
+            }
+        }
+    }
+
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
