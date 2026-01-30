@@ -1,6 +1,7 @@
 package com.example.movies.ui
 
-import android.webkit.WebChromeClient
+import android.annotation.SuppressLint
+import android.app.Activity
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.compose.foundation.Image
@@ -50,6 +51,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.movies.R
 import com.example.movies.model.MovieDetails
+import com.example.movies.utils.FullscreenWebChromeClient
 import com.example.movies.viewModel.MovieDetailsUiState
 import com.example.movies.viewModel.MovieDetailsViewModel
 import com.example.movies.viewModel.SettingsViewModel
@@ -301,8 +303,11 @@ fun SecondBlock(
     }
 }
 
+@SuppressLint("ContextCastToActivity")
 @Composable
 fun MoviePlayer(url: String) {
+    val activity = LocalContext.current as Activity
+
     AndroidView(
         modifier = Modifier
             .fillMaxWidth()
@@ -316,7 +321,7 @@ fun MoviePlayer(url: String) {
                 settings.useWideViewPort = true
                 settings.loadWithOverviewMode = true
 
-                webChromeClient = WebChromeClient()
+                webChromeClient = FullscreenWebChromeClient(activity)
                 webViewClient = WebViewClient()
 
                 loadUrl(url)
