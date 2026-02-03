@@ -166,14 +166,12 @@ fun MovieApp(
                 LaunchedEffect(movieId) {
                     if (movieId.isNotEmpty()) {
                         movieDetailsViewModel.getMovieDetails(movieId)
-                        movieDetailsViewModel.loadPlayer(movieId)
                     }
                 }
                 MovieDetailsScreen(
                     movieDetailsUiState = uiState,
                     retryAction = {
                         movieDetailsViewModel.getMovieDetails(movieId)
-                        movieDetailsViewModel.loadPlayer(movieId)
                     },
                     settingsViewModel = settingsViewModel
                 )

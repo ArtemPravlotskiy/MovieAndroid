@@ -11,9 +11,9 @@ interface MoviesRepository {
     suspend fun searchMovies(query: String): List<Movie>
     suspend fun getMovieDetails(movieId: Int): MovieDetails
 
-    suspend fun getExternalId(imdbId: String): Int
+    suspend fun getExternalId(imdbId: String): Int?
 
-    suspend fun getMoviePlayerUrl(imdbId: String): String
+    suspend fun getMoviePlayerUrl(imdbId: String): String?
 }
 
 class NetworkMoviesRepository(
@@ -41,11 +41,13 @@ class NetworkMoviesRepository(
             language = settingsRepository.getSavedLanguage()
         )
 
-    override suspend fun getExternalId(imdbId: String): Int =
-        externalIdApiService.getExternalId(imdbId).docs[0].id
+    override suspend fun getExternalId(imdbId: String): Int? =
+        externalIdApiService.getExternalId(imdbId).docs.firstOrNull()?.id
 
-    override suspend fun getMoviePlayerUrl(imdbId: String): String {
+    override suspend fun getMoviePlayerUrl(imdbId: String): String? {
         val kinopoiskId = getExternalId(imdbId)
+
+        if (kinopoiskId == null) return null
 
         val players = playerApiService.getPlayers(kinopoiskId)
         return players
