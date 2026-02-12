@@ -17,4 +17,5 @@
     <string name="text_scale_big">БОЛЬШОЙ</string>
     <string name="search">Поиск</string>
     <string name="favorites">Избранное</string>
+    <string name="player_unavailable">Видео плеер временно недоступен</string>
 </resources>

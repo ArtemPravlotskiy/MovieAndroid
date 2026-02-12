@@ -17,4 +17,5 @@
     <string name="text_scale_big">BIG</string>
     <string name="search">Search</string>
     <string name="favorites">Favorites</string>
+    <string name="player_unavailable">Video player is temporarily unavailable</string>
 </resources>

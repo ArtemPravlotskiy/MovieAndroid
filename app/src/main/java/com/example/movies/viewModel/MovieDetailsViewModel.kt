@@ -21,6 +21,12 @@ sealed interface MovieDetailsUiState {
     object Loading : MovieDetailsUiState
 }
 
+sealed interface PlayerUiState {
+    object Loading : PlayerUiState
+    data class Success(val url: String) : PlayerUiState
+    object Error : PlayerUiState
+}
+
 class MovieDetailsViewModel(
     private val moviesRepository: MoviesRepository
 ) : ViewModel() {
@@ -43,18 +49,21 @@ class MovieDetailsViewModel(
         }
     }
 
-    private val _playerUrl = MutableStateFlow<String?>(null)
-    val playerUrl: StateFlow<String?> = _playerUrl
+    private val _playerUiState = MutableStateFlow<PlayerUiState>(PlayerUiState.Loading)
+    val playerUiState: StateFlow<PlayerUiState> = _playerUiState
 
     fun loadPlayer(imdbId: String) {
         viewModelScope.launch {
+            _playerUiState.value = PlayerUiState.Loading
             try {
                 val url = moviesRepository.getMoviePlayerUrl(imdbId = imdbId)
-                _playerUrl.value = url
-            } catch (e: IOException) {
-                MovieDetailsUiState.Error
-            } catch (e: HttpException) {
-                MovieDetailsUiState.Error
+                if (url.isNullOrEmpty()) {
+                    _playerUiState.value = PlayerUiState.Error
+                } else {
+                    _playerUiState.value = PlayerUiState.Success(url)
+                }
+            } catch (e: Exception) {
+                _playerUiState.value = PlayerUiState.Error
             }
         }
     }

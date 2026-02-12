@@ -45,14 +45,14 @@ class NetworkMoviesRepository(
         externalIdApiService.getExternalId(imdbId).docs.firstOrNull()?.id
 
     override suspend fun getMoviePlayerUrl(imdbId: String): String? {
-        val kinopoiskId = getExternalId(imdbId)
-
-        if (kinopoiskId == null) return null
-
-        val players = playerApiService.getPlayers(kinopoiskId)
-        return players
-            .firstOrNull { it.name.equals("collaps", ignoreCase = true) }
-            ?.iframe
-            ?: ""
+        return try {
+            val kinopoiskId = getExternalId(imdbId) ?: return null
+            val players = playerApiService.getPlayers(kinopoiskId)
+            players
+                .firstOrNull { it.name.equals("collaps", ignoreCase = true) }
+                ?.iframe
+        } catch (e: Exception) {
+            null
+        }
     }
 }

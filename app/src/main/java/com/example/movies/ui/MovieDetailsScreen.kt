@@ -54,6 +54,7 @@ import com.example.movies.model.MovieDetails
 import com.example.movies.utils.FullscreenWebChromeClient
 import com.example.movies.viewModel.MovieDetailsUiState
 import com.example.movies.viewModel.MovieDetailsViewModel
+import com.example.movies.viewModel.PlayerUiState
 import com.example.movies.viewModel.SettingsViewModel
 import java.util.Locale
 
@@ -267,7 +268,7 @@ fun SecondBlock(
     val movieDetailsViewModel: MovieDetailsViewModel =
         viewModel(factory = MovieDetailsViewModel.Factory)
 
-    val url by movieDetailsViewModel.playerUrl.collectAsState()
+    val playerUiState by movieDetailsViewModel.playerUiState.collectAsState()
 
     androidx.compose.runtime.LaunchedEffect(movie.imdbId) {
         movieDetailsViewModel.loadPlayer(movie.imdbId)
@@ -292,12 +293,24 @@ fun SecondBlock(
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            if (url != null) {
-                MoviePlayer(url = url!!)
-            } else {
-                androidx.compose.material3.CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
-                )
+            when (playerUiState) {
+                is PlayerUiState.Loading -> {
+                    androidx.compose.material3.CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
+                }
+                is PlayerUiState.Success -> {
+                    MoviePlayer(url = (playerUiState as PlayerUiState.Success).url)
+                }
+                is PlayerUiState.Error -> {
+                    Text(
+                        text = stringResource(R.string.player_unavailable),
+                        color = Color.Red,
+                        modifier = Modifier
+                            .padding(10.dp)
+                            .align(Alignment.CenterHorizontally)
+                    )
+                }
             }
         }
     }
