@@ -6,9 +6,13 @@
 
 ## Скриншоты
 <p align="center">
-  <img src="screenshots/main_screen.png" width="30%" />
-  <img src="screenshots/search_screen.png" width="30%" />
-  <img src="screenshots/genres_screen.png" width="30%" />
+  <img src="screenshots/genresList.png" width="30%" />
+  <img src="screenshots/movieDetails.png" width="30%" />
+  <img src="screenshots/moviesList.png" width="30%" />
+</p>
+<p align="center">
+  <img src="screenshots/genresList.png" width="30%" />
+  <img src="screenshots/settings.png" width="30%" />
 </p>
 
 ---
