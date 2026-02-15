@@ -11,7 +11,7 @@
   <img src="screenshots/moviesList.png" width="30%" />
 </p>
 <p align="center">
-  <img src="screenshots/genresList.png" width="30%" />
+  <img src="screenshots/favouriteMoviesList.png" width="30%" />
   <img src="screenshots/settings.png" width="30%" />
 </p>
 
