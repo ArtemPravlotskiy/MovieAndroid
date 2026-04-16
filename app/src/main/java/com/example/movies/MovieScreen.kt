@@ -6,6 +6,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -29,6 +30,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.movies.ui.ChatScreen
 import com.example.movies.ui.FavoritesScreen
 import com.example.movies.ui.GenreScreen
 import com.example.movies.ui.MovieDetailsScreen
@@ -48,7 +50,8 @@ enum class MovieScreen(@StringRes val title: Int) {
     MovieInfo(title = R.string.movie_info),
     MovieSettings(title = R.string.settings),
     Search(title = R.string.search),
-    Favorites(title = R.string.favorites)
+    Favorites(title = R.string.favorites),
+    AiChat(title = R.string.ai_chat)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -59,6 +62,7 @@ fun MovieAppBar(
     navigateUp: () -> Unit,
     onSearchClick: () -> Unit,
     onFavoritesClick: () -> Unit,
+    onAiChatClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     if (currentScreen != MovieScreen.Start) {
@@ -66,6 +70,13 @@ fun MovieAppBar(
             title = { Text(stringResource(currentScreen.title), color = Color.White) },
             modifier = modifier,
             actions = {
+                IconButton(onClick = onAiChatClick) {
+                    Icon(
+                        imageVector = Icons.Default.Star,
+                        contentDescription = stringResource(R.string.ai_chat),
+                        tint = Color.White
+                    )
+                }
                 IconButton(onClick = onFavoritesClick) {
                     Icon(
                         imageVector = Icons.Default.Favorite,
@@ -119,7 +130,8 @@ fun MovieApp(
                 canNavigateBack = navController.previousBackStackEntry != null,
                 navigateUp = { navController.navigateUp() },
                 onSearchClick = { navController.navigate(MovieScreen.Search.name) },
-                onFavoritesClick = { navController.navigate(MovieScreen.Favorites.name) }
+                onFavoritesClick = { navController.navigate(MovieScreen.Favorites.name) },
+                onAiChatClick = { navController.navigate(MovieScreen.AiChat.name) }
             )
         }
     ) { innerPadding ->
@@ -189,6 +201,12 @@ fun MovieApp(
                 FavoritesScreen(
                     onShowMovieDetails = { selectedMovie -> navController.navigate("${MovieScreen.MovieInfo.name}/$selectedMovie") },
                     settingsViewModel = settingsViewModel
+                )
+            }
+            composable(route = MovieScreen.AiChat.name) {
+                ChatScreen(
+                    settingsViewModel = settingsViewModel,
+                    onShowMovieDetails = { selectedMovie -> navController.navigate("${MovieScreen.MovieInfo.name}/$selectedMovie") }
                 )
             }
         }

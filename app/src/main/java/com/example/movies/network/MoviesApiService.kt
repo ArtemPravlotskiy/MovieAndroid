@@ -4,7 +4,11 @@ import com.example.movies.model.GenresResponse
 import com.example.movies.model.MovieDetails
 import com.example.movies.model.MoviesResponse
 import com.example.movies.model.Movie
+import com.example.movies.model.ChatRequest
+import com.example.movies.model.ChatResponse
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Query
 
 interface MoviesApiService {
@@ -40,4 +44,9 @@ interface MoviesApiService {
     suspend fun vectorSearch(
         @Query("query") query: String
     ): List<Movie>
+
+    @POST("chat")
+    suspend fun chatWithAi(
+        @Body request: ChatRequest
+    ): ChatResponse
 }

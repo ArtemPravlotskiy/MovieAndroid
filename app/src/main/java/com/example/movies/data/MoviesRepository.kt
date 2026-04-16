@@ -1,5 +1,7 @@
 package com.example.movies.data
 
+import com.example.movies.model.ChatRequest
+import com.example.movies.model.ChatResponse
 import com.example.movies.model.Movie
 import com.example.movies.model.MovieDetails
 import com.example.movies.network.ExternalIdApiService
@@ -11,6 +13,7 @@ interface MoviesRepository {
     suspend fun searchMovies(query: String): List<Movie>
     suspend fun vectorSearch(query: String): List<Movie>
     suspend fun getMovieDetails(movieId: Int): MovieDetails
+    suspend fun chatWithAi(request: ChatRequest): ChatResponse
 
     suspend fun getExternalId(imdbId: String): Int?
 
@@ -44,6 +47,9 @@ class NetworkMoviesRepository(
             endpoint = "movie/$movieId",
             language = settingsRepository.getSavedLanguage()
         )
+
+    override suspend fun chatWithAi(request: ChatRequest): ChatResponse =
+        movieApiService.chatWithAi(request)
 
     override suspend fun getExternalId(imdbId: String): Int? =
         externalIdApiService.getExternalId(imdbId).docs.firstOrNull()?.id

@@ -18,4 +18,5 @@
     <string name="search">Search</string>
     <string name="favorites">Favorites</string>
     <string name="player_unavailable">Video player is temporarily unavailable</string>
+    <string name="ai_chat">AI Chat</string>
 </resources>
