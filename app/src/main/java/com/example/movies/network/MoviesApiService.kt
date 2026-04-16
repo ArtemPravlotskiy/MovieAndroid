@@ -3,6 +3,7 @@ package com.example.movies.network
 import com.example.movies.model.GenresResponse
 import com.example.movies.model.MovieDetails
 import com.example.movies.model.MoviesResponse
+import com.example.movies.model.Movie
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -34,4 +35,9 @@ interface MoviesApiService {
         @Query("query") query: String,
         @Query("language") language: String = "en"
     ): MoviesResponse
+
+    @GET("search/ai")
+    suspend fun vectorSearch(
+        @Query("query") query: String
+    ): List<Movie>
 }

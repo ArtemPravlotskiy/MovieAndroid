@@ -20,7 +20,7 @@ interface AppContainer {
 
 class DefaultAppContainer(private val context: Context) : AppContainer {
 //    private val baseUrl = "https://api.themoviedb.org/3/"
-    private val baseUrl = "https://tmdb-proxy-tmdb-proxy2.up.railway.app/"
+    private val baseUrl = "https://tmdb-proxy-ziqk.onrender.com/"
     private val kinopoiskUrl = "https://api.poiskkino.dev/"
     private val playerUrl = "https://api4.rhserv.vu/"
 

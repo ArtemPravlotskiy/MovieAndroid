@@ -9,6 +9,7 @@ import com.example.movies.network.PlayerApiService
 interface MoviesRepository {
     suspend fun getMovies(genreId: String, page: Int): List<Movie>
     suspend fun searchMovies(query: String): List<Movie>
+    suspend fun vectorSearch(query: String): List<Movie>
     suspend fun getMovieDetails(movieId: Int): MovieDetails
 
     suspend fun getExternalId(imdbId: String): Int?
@@ -34,6 +35,9 @@ class NetworkMoviesRepository(
             query = query,
             language = settingsRepository.getSavedLanguage()
         ).movies
+
+    override suspend fun vectorSearch(query: String): List<Movie> =
+        movieApiService.vectorSearch(query = query)
 
     override suspend fun getMovieDetails(movieId: Int): MovieDetails =
         movieApiService.getMovieDetails(

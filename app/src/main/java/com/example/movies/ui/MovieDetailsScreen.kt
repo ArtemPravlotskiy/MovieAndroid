@@ -156,7 +156,7 @@ fun FirstBlock(
                     ) {
                         AsyncImage(
                             model = ImageRequest.Builder(LocalContext.current)
-                                .data("https://tmdb-proxy-tmdb-proxy2.up.railway.app/image?path=${movie.posterPath}")
+                                .data("https://tmdb-proxy-ziqk.onrender.com/image?path=${movie.posterPath}")
                                 .build(),
                             contentDescription = null,
                             placeholder = painterResource(R.drawable.loading_img),

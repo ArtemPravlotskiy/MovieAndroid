@@ -117,7 +117,7 @@ fun MovieCard(
     modifier: Modifier = Modifier
 ) {
     // TODO: кажется, что надо переместить юрл, но куда?
-    val posterUrl = "https://tmdb-proxy-tmdb-proxy2.up.railway.app/image?path=${movie.posterPath}"
+    val posterUrl = "https://tmdb-proxy-ziqk.onrender.com/image?path=${movie.posterPath}"
     val favoriteIds by settingsViewModel.favoriteIds.collectAsState()
     val isFavorite = favoriteIds.contains(movie.id.toString())
 
