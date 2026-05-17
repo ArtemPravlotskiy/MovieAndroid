@@ -77,4 +77,7 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
+
+    // QR Code generation
+    implementation("com.google.zxing:core:3.5.4")
 }

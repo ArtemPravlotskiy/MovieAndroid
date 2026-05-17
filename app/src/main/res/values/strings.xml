@@ -21,4 +21,10 @@
     <string name="ai_chat">AI Chat</string>
     <string name="widget_description">Quick access to movies you are currently watching</string>
     <string name="no_movies_watching">No movies with \"Watching\" tag</string>
+    <string name="share_movie">Share Movie</string>
+    <string name="copy_link">Copy Link</string>
+    <string name="share">Share</string>
+    <string name="link_copied">Link copied to clipboard</string>
+    <string name="close">Close</string>
+    <string name="share_message">Check out this movie: %1$s\n%2$s</string>
 </resources>

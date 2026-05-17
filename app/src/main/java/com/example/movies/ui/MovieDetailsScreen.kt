@@ -2,6 +2,7 @@ package com.example.movies.ui
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Intent
 import android.net.http.SslError
 import android.util.Log
 import android.view.View
@@ -13,6 +14,7 @@ import android.webkit.SslErrorHandler
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -35,6 +37,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -55,10 +58,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -71,6 +77,7 @@ import com.example.movies.R
 import com.example.movies.model.Movie
 import com.example.movies.model.MovieDetails
 import com.example.movies.utils.FullscreenWebChromeClient
+import com.example.movies.utils.QrCodeGenerator
 import com.example.movies.viewModel.MovieDetailsUiState
 import com.example.movies.viewModel.MovieDetailsViewModel
 import com.example.movies.viewModel.PlayerUiState
@@ -146,6 +153,7 @@ fun FirstBlock(
 
     var showTagDialog by remember { mutableStateOf(false) }
     var showRatingDialog by remember { mutableStateOf(false) }
+    var showShareDialog by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
@@ -279,6 +287,14 @@ fun FirstBlock(
                     )
                 }
 
+                IconButton(onClick = { showShareDialog = true }) {
+                    Icon(
+                        imageVector = Icons.Default.Share,
+                        contentDescription = "Share",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+
                 IconButton(onClick = { 
                     settingsViewModel.toggleFavorite(
                         Movie(
@@ -365,6 +381,89 @@ fun FirstBlock(
             }
         )
     }
+
+    if (showShareDialog) {
+        ShareMovieDialog(
+            movie = movie,
+            onDismiss = { showShareDialog = false }
+        )
+    }
+}
+
+@Composable
+fun ShareMovieDialog(
+    movie: MovieDetails,
+    onDismiss: () -> Unit
+) {
+    val context = LocalContext.current
+    val clipboardManager = LocalClipboardManager.current
+    val deepLink = "moviesflow://movie/${movie.id}"
+    
+    val qrCodeBitmap = remember(deepLink) {
+        QrCodeGenerator.generateQrCode(deepLink)
+    }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Поделиться фильмом") },
+        text = {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                qrCodeBitmap?.let {
+                    Image(
+                        bitmap = it.asImageBitmap(),
+                        contentDescription = "QR Code",
+                        modifier = Modifier.size(200.dp).padding(16.dp)
+                    )
+                }
+                
+                Text(
+                    text = movie.title,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                
+                Text(
+                    text = deepLink,
+                    fontSize = 12.sp,
+                    color = Color.Gray,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+
+                Row(
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Button(onClick = {
+                        clipboardManager.setText(AnnotatedString(deepLink))
+                        Toast.makeText(context, "Ссылка скопирована", Toast.LENGTH_SHORT).show()
+                    }) {
+                        Text("Копировать")
+                    }
+                    
+                    Button(onClick = {
+                        val sendIntent: Intent = Intent().apply {
+                            action = Intent.ACTION_SEND
+                            putExtra(Intent.EXTRA_TEXT, "Посмотри этот фильм: ${movie.title}\n$deepLink")
+                            type = "text/plain"
+                        }
+                        val shareIntent = Intent.createChooser(sendIntent, null)
+                        context.startActivity(shareIntent)
+                    }) {
+                        Text("Поделиться")
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Закрыть")
+            }
+        }
+    )
 }
 
 @Composable
