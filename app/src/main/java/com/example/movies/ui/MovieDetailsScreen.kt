@@ -75,6 +75,8 @@ import com.example.movies.viewModel.MovieDetailsUiState
 import com.example.movies.viewModel.MovieDetailsViewModel
 import com.example.movies.viewModel.PlayerUiState
 import com.example.movies.viewModel.SettingsViewModel
+import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Locale
 
 @Composable
@@ -344,9 +346,10 @@ fun FirstBlock(
     if (showTagDialog) {
         TagSelectionDialog(
             currentTag = currentTag,
+            releaseDate = movie.releaseDate,
             onDismiss = { showTagDialog = false },
             onTagSelected = { tag ->
-                settingsViewModel.updateMovieTag(movie.id, tag)
+                settingsViewModel.updateMovieTag(movie.id, tag, movie.title, movie.releaseDate)
                 showTagDialog = false
             }
         )
@@ -367,10 +370,26 @@ fun FirstBlock(
 @Composable
 fun TagSelectionDialog(
     currentTag: String?,
+    releaseDate: String,
     onDismiss: () -> Unit,
     onTagSelected: (String?) -> Unit
 ) {
-    val standardTags = listOf("Смотрю", "В планах", "Смотрел")
+    val standardTags = remember(releaseDate) {
+        val tags = mutableListOf("Смотрю", "В планах", "Смотрел")
+        
+        // Проверяем, в будущем ли дата релиза
+        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        try {
+            val date = sdf.parse(releaseDate)
+            if (date != null && date.after(Calendar.getInstance().time)) {
+                tags.add("Напомнить")
+            }
+        } catch (e: Exception) {
+            // Игнорируем ошибки парсинга
+        }
+        tags
+    }
+
     var customTag by remember { mutableStateOf("") }
     var isAddingCustom by remember { mutableStateOf(false) }
 

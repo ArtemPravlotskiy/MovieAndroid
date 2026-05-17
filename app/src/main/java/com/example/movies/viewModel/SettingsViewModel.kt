@@ -11,6 +11,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.glance.appwidget.updateAll
 import com.example.movies.MovieWidget
 import com.example.movies.MoviesApplication
+import com.example.movies.ReminderManager
 import com.example.movies.data.MoviesRepository
 import com.example.movies.data.SettingsRepository
 import com.example.movies.data.TextScale
@@ -67,6 +68,11 @@ class SettingsViewModel(
                 moviesRepository.deleteFavorite(movie)
                 currentFavorites.remove(idStr)
                 
+                // Cancel reminder if it was set
+                if (_movieTags.value[idStr] == "Напомнить") {
+                    ReminderManager.cancelReminder(settingsRepository.context, movie.id)
+                }
+
                 val newTags = _movieTags.value.toMutableMap()
                 newTags.remove(idStr)
                 _movieTags.value = newTags
@@ -81,12 +87,21 @@ class SettingsViewModel(
         }
     }
 
-    fun updateMovieTag(id: Int, tag: String?) {
+    fun updateMovieTag(id: Int, tag: String?, title: String? = null, releaseDate: String? = null) {
         val idStr = id.toString()
+        val oldTag = _movieTags.value[idStr]
+        
         settingsRepository.saveMovieTag(idStr, tag)
         val newTags = _movieTags.value.toMutableMap()
         if (tag == null) newTags.remove(idStr) else newTags[idStr] = tag
         _movieTags.value = newTags
+
+        // Handle Reminder scheduling
+        if (tag == "Напомнить" && title != null && releaseDate != null) {
+            ReminderManager.scheduleReminder(settingsRepository.context, id, title, releaseDate)
+        } else if (oldTag == "Напомнить" && tag != "Напомнить") {
+            ReminderManager.cancelReminder(settingsRepository.context, id)
+        }
         
         viewModelScope.launch {
             // Обновляем виджет, так как он показывает фильмы именно с тегом "Смотрю"
