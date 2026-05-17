@@ -5,12 +5,15 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.glance.appwidget.updateAll
+import com.example.movies.MovieWidget
 import com.example.movies.MoviesApplication
 import com.example.movies.data.MoviesRepository
 import com.example.movies.data.SettingsRepository
-import com.example.movies.model.Movie
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class FavoritesViewModel(
@@ -21,22 +24,33 @@ class FavoritesViewModel(
     private val _favoritesUiState = MutableStateFlow<MoviesUiState>(MoviesUiState.Loading)
     val favoritesUiState: StateFlow<MoviesUiState> = _favoritesUiState
 
+    init {
+        observeFavorites()
+    }
+
+    private fun observeFavorites() {
+        viewModelScope.launch {
+            moviesRepository.getFavoriteMoviesStream()
+                .catch { _favoritesUiState.value = MoviesUiState.Error }
+                .collect { movies ->
+                    _favoritesUiState.value = MoviesUiState.Success(movies)
+                }
+        }
+    }
+
     fun loadFavorites() {
         viewModelScope.launch {
             try {
-                val favoriteIds = settingsRepository.getFavoriteIds()
-                val favoriteMovies = favoriteIds.map { moviesRepository.getMovieDetails(it.toInt()) }
-                _favoritesUiState.value = MoviesUiState.Success(favoriteMovies.map { movieDetails ->
-                    Movie(
-                        id = movieDetails.id,
-                        title = movieDetails.title,
-                        overview = movieDetails.overview,
-                        posterPath = movieDetails.posterPath,
-                        voteAverage = movieDetails.voteAverage
-                    )
-                })
+                val currentFavorites = moviesRepository.getFavoriteMoviesStream().first()
+
+                for (movie in currentFavorites) {
+                    moviesRepository.getMovieDetails(movie.id)
+                }
+                
+                // Уведомляем виджет после обновления данных
+                MovieWidget().updateAll(settingsRepository.context)
             } catch (e: Exception) {
-                _favoritesUiState.value = MoviesUiState.Error
+                // Ignore errors
             }
         }
     }

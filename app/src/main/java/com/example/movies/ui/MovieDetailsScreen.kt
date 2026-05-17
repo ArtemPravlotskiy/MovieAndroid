@@ -68,6 +68,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.movies.R
+import com.example.movies.model.Movie
 import com.example.movies.model.MovieDetails
 import com.example.movies.utils.FullscreenWebChromeClient
 import com.example.movies.viewModel.MovieDetailsUiState
@@ -276,7 +277,18 @@ fun FirstBlock(
                     )
                 }
 
-                IconButton(onClick = { settingsViewModel.toggleFavorite(movie.id) }) {
+                IconButton(onClick = { 
+                    settingsViewModel.toggleFavorite(
+                        Movie(
+                            id = movie.id,
+                            title = movie.title,
+                            overview = movie.overview,
+                            posterPath = movie.posterPath,
+                            voteAverage = movie.voteAverage,
+                            genreIds = movie.genres.map { it.id }
+                        )
+                    )
+                }) {
                     Icon(
                         imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                         contentDescription = "Favorite",

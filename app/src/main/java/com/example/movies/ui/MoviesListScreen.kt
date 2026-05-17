@@ -229,7 +229,7 @@ fun MovieCard(
                 ) {
                     RatingStars(movie.voteAverage)
 
-                    IconButton(onClick = { settingsViewModel.toggleFavorite(movie.id) }) {
+                    IconButton(onClick = { settingsViewModel.toggleFavorite(movie) }) {
                         Icon(
                             imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                             contentDescription = "Favorite",

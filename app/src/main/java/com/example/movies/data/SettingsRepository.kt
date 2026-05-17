@@ -2,14 +2,27 @@ package com.example.movies.data
 
 import android.content.Context
 import androidx.core.content.edit
+import androidx.glance.appwidget.updateAll
+import com.example.movies.MovieWidget
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 
 class SettingsRepository(
     val context: Context
 ) {
     private val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
+    private val repositoryScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+
+    private fun notifyWidget() {
+        repositoryScope.launch {
+            MovieWidget().updateAll(context)
+        }
+    }
 
     fun saveLanguage(code: String) {
-        prefs.edit { putString("language", code) }
+        prefs.edit(commit = true) { putString("language", code) }
     }
 
     fun getSavedLanguage(): String {
@@ -17,7 +30,7 @@ class SettingsRepository(
     }
 
     fun saveTextScale(scale: TextScale) {
-        prefs.edit { putString("textScale", scale.name) }
+        prefs.edit(commit = true) { putString("textScale", scale.name) }
     }
 
     fun getSavedTextScale(): TextScale {
@@ -26,7 +39,8 @@ class SettingsRepository(
     }
 
     fun saveTheme(theme: Theme) {
-        prefs.edit { putString("theme", theme.name) }
+        prefs.edit(commit = true) { putString("theme", theme.name) }
+        notifyWidget()
     }
 
     fun getSavedTheme(): Theme {
@@ -41,18 +55,20 @@ class SettingsRepository(
     fun addFavorite(id: Int) {
         val favorites = getFavoriteIds().toMutableSet()
         favorites.add(id.toString())
-        prefs.edit { putStringSet("favorites", favorites) }
+        prefs.edit(commit = true) { putStringSet("favorites", favorites) }
+        notifyWidget()
     }
 
     fun removeFavorite(id: Int) {
         val idStr = id.toString()
         val favorites = getFavoriteIds().toMutableSet()
         favorites.remove(idStr)
-        prefs.edit { 
+        prefs.edit(commit = true) { 
             putStringSet("favorites", favorites)
             remove("tag_$idStr")
             remove("rating_$idStr")
         }
+        notifyWidget()
     }
 
     fun getMovieTag(id: String): String? {
@@ -60,10 +76,11 @@ class SettingsRepository(
     }
 
     fun saveMovieTag(id: String, tag: String?) {
-        prefs.edit { 
+        prefs.edit(commit = true) { 
             if (tag == null) remove("tag_$id")
             else putString("tag_$id", tag)
         }
+        notifyWidget()
     }
 
     fun getMovieRating(id: String): Int {
@@ -71,9 +88,10 @@ class SettingsRepository(
     }
 
     fun saveMovieRating(id: String, rating: Int) {
-        prefs.edit { 
+        prefs.edit(commit = true) { 
             if (rating == -1) remove("rating_$id")
             else putInt("rating_$id", rating)
         }
+        notifyWidget()
     }
 }

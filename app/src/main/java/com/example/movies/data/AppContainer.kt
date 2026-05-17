@@ -69,12 +69,17 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
         NetworkGenresRepository(retrofitService, settingsRepository)
     }
 
+    private val database: MovieDatabase by lazy {
+        MovieDatabase.getDatabase(context)
+    }
+
     override val moviesRepository: MoviesRepository by lazy {
         NetworkMoviesRepository(
             movieApiService = retrofitService,
             externalIdApiService = externalIdApiService,
             playerApiService = playerApiService,
-            settingsRepository = settingsRepository
+            settingsRepository = settingsRepository,
+            movieDao = database.movieDao()
         )
     }
 }

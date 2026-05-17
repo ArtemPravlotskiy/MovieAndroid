@@ -8,14 +8,12 @@ import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.glance.ColorFilter
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
 import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.LocalContext
-import androidx.glance.action.actionStartActivity
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
@@ -36,7 +34,8 @@ import androidx.glance.layout.padding
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
-import com.example.movies.model.Movie
+import com.example.movies.data.MoviesRepository
+import com.example.movies.data.SettingsRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.net.URL
@@ -75,7 +74,8 @@ class MovieWidget : GlanceAppWidget() {
                     .fillMaxSize()
                     .background(GlanceTheme.colors.surface)
             ) {
-                items(movies) { movie ->
+                // В Glance используется itemId вместо key
+                items(movies, itemId = { it.id.toLong() }) { movie ->
                     MovieItem(movie)
                 }
             }
@@ -86,13 +86,10 @@ class MovieWidget : GlanceAppWidget() {
     private fun MovieItem(movie: MovieWidgetData) {
         val context = LocalContext.current
         
-        val intent = Intent(
-            Intent.ACTION_VIEW,
-            Uri.parse("moviesflow://movie/${movie.id}"),
-            context,
-            MainActivity::class.java
-        ).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        val intent = Intent(context, MainActivity::class.java).apply {
+            action = Intent.ACTION_VIEW
+            data = Uri.parse("moviesflow://movie/${movie.id}")
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
         }
 
         Column(
@@ -102,24 +99,22 @@ class MovieWidget : GlanceAppWidget() {
                 .clickable(actionStartActivity(intent)),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Заголовок (Название сверху)
             Text(
                 text = movie.title,
                 style = TextStyle(
                     color = GlanceTheme.colors.onSurface,
-                    fontSize = 14.sp,
+                    fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
                 ),
                 maxLines = 1
             )
             
-            Spacer(GlanceModifier.height(4.dp))
+            Spacer(GlanceModifier.height(8.dp))
 
-            // Постер под названием
             Box(
                 modifier = GlanceModifier
                     .fillMaxWidth()
-                    .height(180.dp) // Высота примерно для 2x3 сетки
+                    .height(260.dp) // Крупный размер для 2x3
                     .background(GlanceTheme.colors.secondaryContainer)
             ) {
                 if (movie.posterBitmap != null) {
@@ -134,31 +129,29 @@ class MovieWidget : GlanceAppWidget() {
                         modifier = GlanceModifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            "No Poster", 
-                            style = TextStyle(color = GlanceTheme.colors.onSecondaryContainer)
-                        )
+                        Text("?", style = TextStyle(color = GlanceTheme.colors.onSecondaryContainer, fontSize = 40.sp))
                     }
                 }
                 
-                // Тег "Смотрю" поверх постера
+                // Тег "Смотрю"
                 Box(
                     modifier = GlanceModifier
-                        .padding(4.dp)
+                        .padding(8.dp)
                         .background(GlanceTheme.colors.primary)
-                        .padding(horizontal = 6.dp, vertical = 2.dp)
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
                 ) {
                     Text(
                         text = "Смотрю",
                         style = TextStyle(
                             color = GlanceTheme.colors.onPrimary,
-                            fontSize = 10.sp,
+                            fontSize = 12.sp,
                             fontWeight = FontWeight.Bold
                         )
                     )
                 }
             }
-            Spacer(GlanceModifier.height(12.dp)) // Отступ между фильмами для имитации раздельных страниц
+            // Отступ снизу для разделения "страниц" при свайпе
+            Spacer(GlanceModifier.height(20.dp))
         }
     }
 
@@ -167,6 +160,7 @@ class MovieWidget : GlanceAppWidget() {
         val settings = app.container.settingsRepository
         val repository = app.container.moviesRepository
         
+        // Берем список избранного и фильтруем по тегу
         val favoriteIds = settings.getFavoriteIds()
         val watchingIds = favoriteIds.filter { id ->
             settings.getMovieTag(id) == "Смотрю"
@@ -174,27 +168,42 @@ class MovieWidget : GlanceAppWidget() {
 
         watchingIds.mapNotNull { id ->
             try {
-                val details = repository.getMovieDetails(id.toInt())
-                val bitmap = details.posterPath?.let { path ->
-                    downloadBitmap("https://tmdb-proxy-ziqk.onrender.com/image?path=$path")
+                val movieId = id.toInt()
+                // Сначала ищем в локальной базе, чтобы было мгновенно
+                val movie = repository.getLocalMovie(movieId)
+                
+                if (movie != null) {
+                    val bitmap = movie.posterPath?.let { path ->
+                        downloadAndResizeBitmap("https://tmdb-proxy-ziqk.onrender.com/image?path=$path")
+                    }
+                    MovieWidgetData(id = movie.id, title = movie.title, posterBitmap = bitmap)
+                } else {
+                    // Если в базе нет (редкий случай), тянем из сети
+                    val details = repository.getMovieDetails(movieId)
+                    val bitmap = details.posterPath?.let { path ->
+                        downloadAndResizeBitmap("https://tmdb-proxy-ziqk.onrender.com/image?path=$path")
+                    }
+                    MovieWidgetData(id = details.id, title = details.title, posterBitmap = bitmap)
                 }
-                MovieWidgetData(
-                    id = details.id,
-                    title = details.title,
-                    posterBitmap = bitmap
-                )
             } catch (e: Exception) {
                 null
             }
         }
     }
 
-    private fun downloadBitmap(url: String): Bitmap? {
+    private fun downloadAndResizeBitmap(url: String): Bitmap? {
         return try {
             val connection = URL(url).openConnection()
             connection.connect()
             val input = connection.getInputStream()
-            BitmapFactory.decodeStream(input)
+            val original = BitmapFactory.decodeStream(input)
+            
+            if (original != null) {
+                val aspectRatio = original.height.toFloat() / original.width.toFloat()
+                val targetWidth = 400
+                val targetHeight = (targetWidth * aspectRatio).toInt()
+                Bitmap.createScaledBitmap(original, targetWidth, targetHeight, true)
+            } else null
         } catch (e: Exception) {
             null
         }
