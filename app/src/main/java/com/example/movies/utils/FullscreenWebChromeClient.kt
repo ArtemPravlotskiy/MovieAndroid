@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.webkit.WebChromeClient
 
 @Suppress("DEPRECATION")
-class FullscreenWebChromeClient(
+open class FullscreenWebChromeClient(
     private val activity: Activity
 ) : WebChromeClient() {
 

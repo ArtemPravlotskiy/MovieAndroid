@@ -1,5 +1,6 @@
 package com.example.movies.data
 
+import android.util.Log
 import com.example.movies.model.ChatRequest
 import com.example.movies.model.ChatResponse
 import com.example.movies.model.Movie
@@ -55,14 +56,14 @@ class NetworkMoviesRepository(
         externalIdApiService.getExternalId(imdbId).docs.firstOrNull()?.id
 
     override suspend fun getMoviePlayerUrl(imdbId: String): String? {
-        return try {
-            val kinopoiskId = getExternalId(imdbId) ?: return null
-            val players = playerApiService.getPlayers(kinopoiskId)
-            players
-                .firstOrNull { it.name.equals("collaps", ignoreCase = true) }
-                ?.iframe
-        } catch (e: Exception) {
-            null
+        Log.d("MoviesRepository", "getMoviePlayerUrl called for imdbId: $imdbId")
+        if (imdbId.isBlank()) {
+            Log.w("MoviesRepository", "imdbId is blank, returning null")
+            return null
         }
+        val token = "eyJhbGciOiJIUzI1NiJ9.eyJ3ZWJTaXRlIjoiNzQyIiwiaXNzIjoiYXBpLXdlYm1hc3RlciIsInN1YiI6Ijg1MyIsImlhdCI6MTc3NTcyOTY2NiwianRpIjoiMThlNjBlMzUtZTZiZS00ZWQzLTg3ODQtNTQzYTE3NTQwYWRhIiwic2NvcGUiOiJETEUifQ.A1IC5EXu4yM08qBMAnYgM82FpiuTMN__-f7Q23D0-iQ"
+        val url = "https://api3.rstprgapipt.com/balancer-api/iframe?imdb=$imdbId&lang_order=rus&lang_order=eng&token=$token"
+        Log.d("MoviesRepository", "Generated player URL: $url")
+        return url
     }
 }

@@ -45,8 +45,35 @@ class SettingsRepository(
     }
 
     fun removeFavorite(id: Int) {
+        val idStr = id.toString()
         val favorites = getFavoriteIds().toMutableSet()
-        favorites.remove(id.toString())
-        prefs.edit { putStringSet("favorites", favorites) }
+        favorites.remove(idStr)
+        prefs.edit { 
+            putStringSet("favorites", favorites)
+            remove("tag_$idStr")
+            remove("rating_$idStr")
+        }
+    }
+
+    fun getMovieTag(id: String): String? {
+        return prefs.getString("tag_$id", null)
+    }
+
+    fun saveMovieTag(id: String, tag: String?) {
+        prefs.edit { 
+            if (tag == null) remove("tag_$id")
+            else putString("tag_$id", tag)
+        }
+    }
+
+    fun getMovieRating(id: String): Int {
+        return prefs.getInt("rating_$id", -1)
+    }
+
+    fun saveMovieRating(id: String, rating: Int) {
+        prefs.edit { 
+            if (rating == -1) remove("rating_$id")
+            else putInt("rating_$id", rating)
+        }
     }
 }

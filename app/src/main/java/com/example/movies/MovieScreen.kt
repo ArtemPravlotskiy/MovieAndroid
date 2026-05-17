@@ -30,6 +30,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 import com.example.movies.ui.ChatScreen
 import com.example.movies.ui.FavoritesScreen
 import com.example.movies.ui.GenreScreen
@@ -169,7 +170,8 @@ fun MovieApp(
             }
             composable(
                 route = "${MovieScreen.MovieInfo.name}/{movieId}",
-                arguments = listOf(navArgument("movieId") { type = NavType.StringType })
+                arguments = listOf(navArgument("movieId") { type = NavType.StringType }),
+                deepLinks = listOf(navDeepLink { uriPattern = "moviesflow://movie/{movieId}" })
             ) {
                 val movieDetailsViewModel: MovieDetailsViewModel =
                     viewModel(factory = MovieDetailsViewModel.Factory)

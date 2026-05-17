@@ -1,5 +1,6 @@
 package com.example.movies.viewModel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
@@ -57,12 +58,15 @@ class MovieDetailsViewModel(
             _playerUiState.value = PlayerUiState.Loading
             try {
                 val url = moviesRepository.getMoviePlayerUrl(imdbId = imdbId)
+                Log.d("MovieDetailsViewModel", "Loading player for imdbId: $imdbId, URL: $url")
                 if (url.isNullOrEmpty()) {
+                    Log.w("MovieDetailsViewModel", "Player URL is null or empty for imdbId: $imdbId")
                     _playerUiState.value = PlayerUiState.Error
                 } else {
                     _playerUiState.value = PlayerUiState.Success(url)
                 }
             } catch (e: Exception) {
+                Log.e("MovieDetailsViewModel", "Error loading player URL for imdbId: $imdbId", e)
                 _playerUiState.value = PlayerUiState.Error
             }
         }

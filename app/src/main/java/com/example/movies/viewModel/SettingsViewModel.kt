@@ -29,17 +29,66 @@ class SettingsViewModel(
     private val _favoriteIds = MutableStateFlow(settingsRepository.getFavoriteIds())
     val favoriteIds: StateFlow<Set<String>> = _favoriteIds
 
+    // Map to store tags for favorite movies
+    private val _movieTags = MutableStateFlow<Map<String, String>>(emptyMap())
+    val movieTags: StateFlow<Map<String, String>> = _movieTags
+
+    // Map to store ratings for favorite movies
+    private val _movieRatings = MutableStateFlow<Map<String, Int>>(emptyMap())
+    val movieRatings: StateFlow<Map<String, Int>> = _movieRatings
+
+    init {
+        loadTagsAndRatings()
+    }
+
+    private fun loadTagsAndRatings() {
+        val tags = mutableMapOf<String, String>()
+        val ratings = mutableMapOf<String, Int>()
+        _favoriteIds.value.forEach { id ->
+            settingsRepository.getMovieTag(id)?.let { tags[id] = it }
+            val rating = settingsRepository.getMovieRating(id)
+            if (rating != -1) ratings[id] = rating
+        }
+        _movieTags.value = tags
+        _movieRatings.value = ratings
+    }
+
     fun toggleFavorite(id: Int) {
         val currentFavorites = _favoriteIds.value.toMutableSet()
         val idStr = id.toString()
         if (currentFavorites.contains(idStr)) {
             settingsRepository.removeFavorite(id)
             currentFavorites.remove(idStr)
+            
+            // Cleanup tags and ratings
+            val newTags = _movieTags.value.toMutableMap()
+            newTags.remove(idStr)
+            _movieTags.value = newTags
+            
+            val newRatings = _movieRatings.value.toMutableMap()
+            newRatings.remove(idStr)
+            _movieRatings.value = newRatings
         } else {
             settingsRepository.addFavorite(id)
             currentFavorites.add(idStr)
         }
         _favoriteIds.value = currentFavorites
+    }
+
+    fun updateMovieTag(id: Int, tag: String?) {
+        val idStr = id.toString()
+        settingsRepository.saveMovieTag(idStr, tag)
+        val newTags = _movieTags.value.toMutableMap()
+        if (tag == null) newTags.remove(idStr) else newTags[idStr] = tag
+        _movieTags.value = newTags
+    }
+
+    fun updateMovieRating(id: Int, rating: Int) {
+        val idStr = id.toString()
+        settingsRepository.saveMovieRating(idStr, rating)
+        val newRatings = _movieRatings.value.toMutableMap()
+        if (rating == -1) newRatings.remove(idStr) else newRatings[idStr] = rating
+        _movieRatings.value = newRatings
     }
 
     fun selectLanguage(code: String) {

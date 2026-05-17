@@ -35,13 +35,16 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.movies.R
@@ -116,16 +119,20 @@ fun MovieCard(
     settingsViewModel: SettingsViewModel,
     modifier: Modifier = Modifier
 ) {
-    // TODO: кажется, что надо переместить юрл, но куда?
     val posterUrl = "https://tmdb-proxy-ziqk.onrender.com/image?path=${movie.posterPath}"
     val favoriteIds by settingsViewModel.favoriteIds.collectAsState()
+    val movieTags by settingsViewModel.movieTags.collectAsState()
+    val movieRatings by settingsViewModel.movieRatings.collectAsState()
+    
     val isFavorite = favoriteIds.contains(movie.id.toString())
+    val tag = movieTags[movie.id.toString()]
+    val userRating = movieRatings[movie.id.toString()]
 
     Card(
         modifier = modifier
             .padding(start = 28.dp, end = 28.dp, bottom = 12.dp)
             .fillMaxWidth()
-            .height(170.dp)
+            .height(180.dp) // Increased height slightly to accommodate tags
             .clickable { onClick(movie.id) },
         elevation = CardDefaults.cardElevation(4.dp),
         colors = CardDefaults.cardColors(
@@ -160,16 +167,58 @@ fun MovieCard(
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Column {
-                    Text(
-                        text = movie.title,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = movie.title,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.weight(1f)
+                        )
+                        if (isFavorite && userRating != null) {
+                            Box(
+                                modifier = Modifier
+                                    .padding(start = 4.dp)
+                                    .clip(RoundedCornerShape(4.dp))
+                                    .background(MaterialTheme.colorScheme.primary)
+                                    .padding(horizontal = 4.dp, vertical = 2.dp)
+                            ) {
+                                Text(
+                                    text = "$userRating/10",
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.Black
+                                )
+                            }
+                        }
+                    }
+                    
+                    if (isFavorite && tag != null) {
+                        Box(
+                            modifier = Modifier
+                                .padding(vertical = 2.dp)
+                                .clip(RoundedCornerShape(4.dp))
+                                .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f))
+                                .padding(horizontal = 6.dp, vertical = 2.dp)
+                        ) {
+                            Text(
+                                text = tag,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = MaterialTheme.colorScheme.secondary
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = movie.overview,
-                        maxLines = 3,
-                        overflow = TextOverflow.Ellipsis
+                        maxLines = if (tag != null) 2 else 3,
+                        overflow = TextOverflow.Ellipsis,
+                        fontSize = 12.sp
                     )
                 }
 
@@ -201,14 +250,8 @@ fun RatingStars(rating: Double) {
                 imageVector = Icons.Default.Star,
                 contentDescription = null,
                 tint = if (index < rating) MaterialTheme.colorScheme.primary else Color.Gray,
-                modifier = Modifier.size(21.dp)
+                modifier = Modifier.size(16.dp)
             )
         }
     }
-}
-
-@Preview
-@Composable
-fun MovieCardPreview() {
-    // MovieCard(mockMoviesResponse.movies[0], {}, viewModel())
 }

@@ -2,10 +2,20 @@ package com.example.movies.ui
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.net.http.SslError
+import android.util.Log
+import android.view.View
+import android.view.ViewGroup
+import android.webkit.ConsoleMessage
+import android.webkit.CookieManager
+import android.webkit.PermissionRequest
+import android.webkit.SslErrorHandler
+import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +27,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,15 +35,22 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -116,7 +134,15 @@ fun FirstBlock(
     settingsViewModel: SettingsViewModel
 ) {
     val favoriteIds by settingsViewModel.favoriteIds.collectAsState()
+    val movieTags by settingsViewModel.movieTags.collectAsState()
+    val movieRatings by settingsViewModel.movieRatings.collectAsState()
+
     val isFavorite = favoriteIds.contains(movie.id.toString())
+    val currentTag = movieTags[movie.id.toString()]
+    val currentRating = movieRatings[movie.id.toString()]
+
+    var showTagDialog by remember { mutableStateOf(false) }
+    var showRatingDialog by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
@@ -241,6 +267,7 @@ fun FirstBlock(
                     modifier = Modifier
                         .fillMaxHeight()
                         .padding(10.dp)
+                        .weight(1f)
                 ) {
                     Text(
                         text = movie.genres.joinToString(separator = ", ") { it.name },
@@ -257,8 +284,169 @@ fun FirstBlock(
                     )
                 }
             }
+
+            if (isFavorite) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 10.dp, vertical = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Тег
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.3f))
+                            .clickable { showTagDialog = true }
+                            .padding(horizontal = 12.dp, vertical = 6.dp)
+                    ) {
+                        Text(
+                            text = currentTag ?: "Добавить тег",
+                            color = MaterialTheme.colorScheme.secondary,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp
+                        )
+                    }
+
+                    // Оценка
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.3f))
+                            .clickable { showRatingDialog = true }
+                            .padding(horizontal = 12.dp, vertical = 6.dp)
+                    ) {
+                        Text(
+                            text = if (currentRating != null) "$currentRating/10" else "Оценить",
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp
+                        )
+                    }
+                }
+            }
         }
     }
+
+    if (showTagDialog) {
+        TagSelectionDialog(
+            currentTag = currentTag,
+            onDismiss = { showTagDialog = false },
+            onTagSelected = { tag ->
+                settingsViewModel.updateMovieTag(movie.id, tag)
+                showTagDialog = false
+            }
+        )
+    }
+
+    if (showRatingDialog) {
+        RatingSelectionDialog(
+            currentRating = currentRating,
+            onDismiss = { showRatingDialog = false },
+            onRatingSelected = { rating ->
+                settingsViewModel.updateMovieRating(movie.id, rating)
+                showRatingDialog = false
+            }
+        )
+    }
+}
+
+@Composable
+fun TagSelectionDialog(
+    currentTag: String?,
+    onDismiss: () -> Unit,
+    onTagSelected: (String?) -> Unit
+) {
+    val standardTags = listOf("Смотрю", "В планах", "Смотрел")
+    var customTag by remember { mutableStateOf("") }
+    var isAddingCustom by remember { mutableStateOf(false) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Выберите тег") },
+        text = {
+            Column {
+                standardTags.forEach { tag ->
+                    TextButton(
+                        onClick = { onTagSelected(tag) },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = tag,
+                            color = if (currentTag == tag) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                }
+                
+                if (isAddingCustom) {
+                    TextField(
+                        value = customTag,
+                        onValueChange = { customTag = it },
+                        placeholder = { Text("Свой тег") },
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
+                    )
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                        TextButton(onClick = { isAddingCustom = false }) { Text("Отмена") }
+                        Button(onClick = { if (customTag.isNotBlank()) onTagSelected(customTag) }) { Text("Ок") }
+                    }
+                } else {
+                    TextButton(
+                        onClick = { isAddingCustom = true },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Свой тег...", color = MaterialTheme.colorScheme.onSurface)
+                    }
+                }
+
+                if (currentTag != null) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    TextButton(
+                        onClick = { onTagSelected(null) },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Удалить тег", color = Color.Red)
+                    }
+                }
+            }
+        },
+        confirmButton = {},
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text("Закрыть") }
+        }
+    )
+}
+
+@Composable
+fun RatingSelectionDialog(
+    currentRating: Int?,
+    onDismiss: () -> Unit,
+    onRatingSelected: (Int) -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Ваша оценка") },
+        text = {
+            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                (0..10).forEach { rating ->
+                    TextButton(
+                        onClick = { onRatingSelected(rating) },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = "$rating/10",
+                            fontWeight = if (currentRating == rating) FontWeight.Bold else FontWeight.Normal,
+                            color = if (currentRating == rating) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                }
+            }
+        },
+        confirmButton = {},
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text("Закрыть") }
+        }
+    )
 }
 
 @Composable
@@ -316,10 +504,11 @@ fun SecondBlock(
     }
 }
 
-@SuppressLint("ContextCastToActivity")
+@SuppressLint("ContextCastToActivity", "SetJavaScriptEnabled")
 @Composable
 fun MoviePlayer(url: String) {
     val activity = LocalContext.current as Activity
+    Log.d("MoviePlayer", "Rendering WebView with URL: $url")
 
     AndroidView(
         modifier = Modifier
@@ -328,16 +517,87 @@ fun MoviePlayer(url: String) {
             .clip(RoundedCornerShape(10.dp)),
         factory = { context ->
             WebView(context).apply {
-                settings.javaScriptEnabled = true
-                settings.domStorageEnabled = true
-                settings.mediaPlaybackRequiresUserGesture = false
-                settings.useWideViewPort = true
-                settings.loadWithOverviewMode = true
+                // Устанавливаем параметры для WebView
+                layoutParams = ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
+                )
 
-                webChromeClient = FullscreenWebChromeClient(activity)
-                webViewClient = WebViewClient()
+                WebView.setWebContentsDebuggingEnabled(true)
+                setBackgroundColor(android.graphics.Color.BLACK)
 
-                loadUrl(url)
+                // Включаем аппаратное ускорение
+                setLayerType(View.LAYER_TYPE_HARDWARE, null)
+
+                settings.apply {
+                    javaScriptEnabled = true
+                    domStorageEnabled = true
+                    mediaPlaybackRequiresUserGesture = false
+                    useWideViewPort = true
+                    loadWithOverviewMode = true
+                    allowFileAccess = true
+                    allowContentAccess = true
+                    mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+                    javaScriptCanOpenWindowsAutomatically = true
+                }
+
+                val cookieManager = CookieManager.getInstance()
+                cookieManager.setAcceptCookie(true)
+                cookieManager.setAcceptThirdPartyCookies(this, true)
+
+                webChromeClient = object : FullscreenWebChromeClient(activity) {
+                    override fun onConsoleMessage(consoleMessage: ConsoleMessage?): Boolean {
+                        Log.d("MoviePlayerJS", "[${consoleMessage?.messageLevel()}] ${consoleMessage?.message()} -- line ${consoleMessage?.lineNumber()}")
+                        return true
+                    }
+
+                    override fun onPermissionRequest(request: PermissionRequest?) {
+                        request?.let {
+                            if (it.resources.contains(PermissionRequest.RESOURCE_PROTECTED_MEDIA_ID)) {
+                                it.grant(arrayOf(PermissionRequest.RESOURCE_PROTECTED_MEDIA_ID))
+                            } else {
+                                it.grant(it.resources)
+                            }
+                        }
+                    }
+                }
+
+                webViewClient = object : WebViewClient() {
+                    override fun onPageFinished(view: WebView?, url: String?) {
+                        super.onPageFinished(view, url)
+                        Log.d("MoviePlayer", "Finished loading URL: $url")
+
+                        // Запрашиваем данные из localStorage через JS
+                        view?.evaluateJavascript(
+                            "(function() { return JSON.stringify(localStorage); })();"
+                        ) { result ->
+                            // В 'result' прилетит JSON-строка со всеми данными localStorage сайта
+                            Log.d("MoviePlayerLocalStorage", "Данные плеера: $result")
+
+                            // Твоя задача — распарсить этот JSON и найти ключ вроде "video_progress_XXX" или "player_time"
+                        }
+                    }
+
+                    override fun onReceivedError(view: WebView?, errorCode: Int, description: String?, failingUrl: String?) {
+                        Log.e("MoviePlayer", "Error: $description (Code: $errorCode) for URL: $failingUrl")
+                    }
+
+                    @SuppressLint("WebViewClientOnReceivedSslError")
+                    override fun onReceivedSslError(view: WebView?, handler: SslErrorHandler?, error: SslError?) {
+                        Log.e("MoviePlayer", "SSL Error ignored: $error")
+                        handler?.proceed()
+                    }
+                }
+
+                val headers = mutableMapOf<String, String>()
+                headers["Referer"] = "https://reyohoho.com"
+                loadUrl(url, headers)
+            }
+        },
+        update = { webView ->
+            if (url.isNotEmpty() && webView.url != url) {
+                Log.d("MoviePlayer", "Updating WebView URL to: $url")
+                webView.loadUrl(url)
             }
         }
     )
