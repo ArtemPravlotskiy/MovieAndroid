@@ -98,31 +98,33 @@ fun ChatBubble(
                 bottomEnd = if (message.isUser) 0.dp else 16.dp
             )
         ) {
-            Text(
-                text = message.text,
-                color = Color.White,
-                modifier = Modifier.padding(12.dp),
-                fontSize = 16.sp
-            )
-        }
+            Column(modifier = Modifier.padding(12.dp)) {
+                Text(
+                    text = message.text,
+                    color = Color.White,
+                    fontSize = 16.sp
+                )
 
-        if (message.recommendations.isNotEmpty()) {
-            Spacer(modifier = Modifier.height(8.dp))
-            message.recommendations.forEach { rec ->
-                rec.movie?.let { movie ->
-                    Column(modifier = Modifier.padding(vertical = 4.dp)) {
-                        Text(
-                            text = "💡 ${rec.recommendation.reason}",
-                            color = MaterialTheme.colorScheme.primary,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(start = 8.dp, bottom = 4.dp)
-                        )
-                        MovieCard(
-                            movie = movie,
-                            onClick = onShowMovieDetails,
-                            settingsViewModel = settingsViewModel
-                        )
+                if (message.recommendations.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(12.dp))
+                    message.recommendations.forEach { rec ->
+                        rec.movie?.let { movie ->
+                            Column(modifier = Modifier.padding(vertical = 4.dp)) {
+                                Text(
+                                    text = "💡 ${rec.recommendation.reason}",
+                                    color = MaterialTheme.colorScheme.primary,
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(bottom = 4.dp)
+                                )
+                                MovieCard(
+                                    movie = movie,
+                                    onClick = onShowMovieDetails,
+                                    settingsViewModel = settingsViewModel,
+                                    modifier = Modifier.padding(0.dp)
+                                )
+                            }
+                        }
                     }
                 }
             }
