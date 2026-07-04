@@ -1,5 +1,7 @@
 # MovieAndroid — TMDB Explorer
 
+[QA documentation](qa.md)
+
 **MovieAndroid** — это мобильное приложение для поиска и просмотра информации о фильмах, использующее API [The Movie Database (TMDB)](https://www.themoviedb.org/documentation/api). Проект создан как демонстрация навыков актуальной Android-разработки: декларативный UI, реактивное программирование и чистая архитектура.
 
 ---
